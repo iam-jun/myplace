@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionName="panel_note">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/edtTitle"
+                        style="?android:attr/textAppearanceLarge"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@null"
+                        android:backgroundTint="@null"
+                        android:drawableTint="@null"
+                        android:hint="Enter title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#eee" />
+
+                    <EditText
+                        android:id="@+id/edtContent"
+                        style="?android:attr/textAppearance"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@null"
+                        android:backgroundTint="@null"
+                        android:drawableTint="@null"
+                        android:gravity="top|left"
+                        android:hint="Enter content"
+                        android:textColorHint="#cccccc" />
+                </LinearLayout>
+            </ScrollView>
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:id="@+id/panel_image"
+                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content">
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/btnAddImage"
+                        android:src="@android:drawable/ic_input_add"
+                        android:layout_width="wrap_content"
+                        android:scaleType="fitXY"
+                        android:layout_margin="10dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </HorizontalScrollView>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
