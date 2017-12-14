@@ -5,4 +5,7 @@ package com.tu.place.utils;
  */
 
 public class AppContants {
+
+    public static String FIREBASE_ROOT = "MyProject";
+    public static String FIREBASE_USER_TABLE = FIREBASE_ROOT + "/" + "User";
 }

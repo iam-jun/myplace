@@ -51,6 +51,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/color_text"
                     android:hint="Password"
+                    android:inputType="textPassword"
                     android:lines="1"
                     android:textColor="@color/color_text"
                     android:textColorHint="@color/color_text" />

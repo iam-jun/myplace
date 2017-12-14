@@ -5,15 +5,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 
+import com.google.firebase.database.DataSnapshot;
 import com.tu.place.R;
+import com.tu.place.firebase.FirebaseManager;
+import com.tu.place.model.User;
+import com.tu.place.utils.AppContants;
+import com.tu.place.utils.AppDialogManager;
+import com.tu.place.utils.AppUtils;
 
 /**
  * Created by SEV_USER on 4/26/2017.
@@ -22,8 +29,12 @@ import com.tu.place.R;
 public class RegisterActivity extends NavigationActivity implements View.OnClickListener{
     private static final int KILL_SELF = 1;
     private Button btnRegister;
+    private EditText edtName, edtPhone, edtUserName, edtPassword, edtRePassword;
+    private RadioGroup radioGender;
     private Dialog dialog;
     private LinearLayout layout;
+    FirebaseManager firebaseManager;
+    Dialog loadingDialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +54,53 @@ public class RegisterActivity extends NavigationActivity implements View.OnClick
 
     private void initViews() {
         btnRegister = (Button) findViewById(R.id.btnRegister);
+        edtName = (EditText) findViewById(R.id.edtRegisterName);
+        edtPhone = (EditText) findViewById(R.id.edtRegisterPhone);
+        edtUserName = (EditText) findViewById(R.id.edtRegisterUserName);
+        edtPassword = (EditText) findViewById(R.id.edtRegisterPassword);
+        edtRePassword = (EditText) findViewById(R.id.edtRegisterRePassword);
+        radioGender = (RadioGroup) findViewById(R.id.radioGender);
+        loadingDialog = AppDialogManager.createLoadingDialog(this);
         btnRegister.setOnClickListener(this);
+        firebaseManager = new FirebaseManager();
+        //firebaseManager.getRef(AppContants.FIREBASE_USER_TABLE);
+    }
+
+    private void registerUser(){
+        String name = edtName.getText().toString();
+        String phone = edtPhone.getText().toString();
+        String usn = edtUserName.getText().toString();
+        String pwd = edtPassword.getText().toString();
+        String repwd = edtRePassword.getText().toString();
+        Boolean gender = radioGender.indexOfChild(findViewById(radioGender.getCheckedRadioButtonId())) == 0;
+        if(AppUtils.isEmptyString(name)){
+            edtName.setError("Không được bỏ trống tên");
+        }else if(AppUtils.isEmptyString(phone)){
+            edtPhone.setError("Không được bỏ trống số diện thoại");
+        }else if(AppUtils.isEmptyString(usn)){
+            edtUserName.setError("Không được bỏ trống tên tài khoản");
+        }else if(AppUtils.isEmptyString(pwd)){
+            edtPassword.setError("Không được bỏ trống mật khẩu");
+        }else if(!pwd.equals(repwd)){
+            edtRePassword.setError("Mật khẩu nhập lại không khớp");
+        }else {
+            loadingDialog.show();
+            User user = new User(name, phone, pwd, gender, 1);
+            firebaseManager.writeRef(AppContants.FIREBASE_USER_TABLE, usn, user, new FirebaseManager.Callback() {
+                @Override
+                public void success(DataSnapshot dataSnapshot) {
+                    loadingDialog.dismiss();
+                    Snackbar.make(layout, "Đăng ký thành công", Snackbar.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void failed() {
+                    loadingDialog.dismiss();
+                    Snackbar.make(layout, "Đăng ký thất bại", Snackbar.LENGTH_LONG).show();
+                }
+            });
+        }
+
     }
 
     private void initDialog() {
@@ -73,7 +130,8 @@ public class RegisterActivity extends NavigationActivity implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnRegister:
-                dialog.show();
+                //dialog.show();
+                registerUser();
                 break;
         }
     }

@@ -52,26 +52,27 @@
             </android.support.design.widget.TextInputLayout>
 
             <RadioGroup
+                android:id="@+id/radioGender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
                 <RadioButton
-                    style="?android:attr/checkboxStyle"
                     android:id="@+id/rbRegisterMale"
+                    style="?android:attr/checkboxStyle"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:checked="true"
                     android:text="Male" />
 
                 <RadioButton
-                    style="?android:attr/checkboxStyle"
                     android:id="@+id/rbRegisterFemale"
+                    style="?android:attr/checkboxStyle"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="Female" />
             </RadioGroup>
             <TextView
@@ -108,6 +109,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/color_text"
                     android:hint="Password"
+                    android:inputType="textPassword"
                     android:lines="1"
                     android:textColor="@color/color_text"
                     android:textColorHint="@color/color_text" />
@@ -124,6 +126,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/color_text"
                     android:hint="Re Password"
+                    android:inputType="textPassword"
                     android:lines="1"
                     android:textColor="@color/color_text"
                     android:textColorHint="@color/color_text" />
