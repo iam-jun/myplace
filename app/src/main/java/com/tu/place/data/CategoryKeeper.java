@@ -40,7 +40,7 @@ public class CategoryKeeper {
       categories.add(new FilterItem("Drink", R.drawable.ic_local_cafe_grey_48dp, true, R.drawable.ic_local_cafe_blue_48dp));
       categories.add(new FilterItem("Food", R.drawable.ic_local_dining_grey_48dp, true, R.drawable.ic_local_dining_blue_48dp));
       categories.add(new FilterItem("Hotel", R.drawable.ic_local_hotel_grey_48dp, true, R.drawable.ic_local_hotel_blue_48dp));
-      categories.add(new FilterItem("Play", R.drawable.ic_local_pizza_gray_48dp, false, R.drawable.ic_local_pizza_blue_48dp));
+      categories.add(new FilterItem("Entertainment", R.drawable.ic_local_pizza_gray_48dp, true, R.drawable.ic_local_pizza_blue_48dp));
     }
 
     public static CategoryKeeper getInstance(){

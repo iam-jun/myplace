@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -35,6 +37,8 @@ public class RegisterActivity extends NavigationActivity implements View.OnClick
     private LinearLayout layout;
     FirebaseManager firebaseManager;
     Dialog loadingDialog;
+    private String TAG = "Register_Activity";
+    private boolean isDupplicateAccount =false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +66,25 @@ public class RegisterActivity extends NavigationActivity implements View.OnClick
         radioGender = (RadioGroup) findViewById(R.id.radioGender);
         loadingDialog = AppDialogManager.createLoadingDialog(this);
         btnRegister.setOnClickListener(this);
+
+        edtUserName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkDupplicateAccount(edtUserName.getText().toString());
+
+            }
+        });
         firebaseManager = new FirebaseManager();
-        //firebaseManager.getRef(AppContants.FIREBASE_USER_TABLE);
     }
 
     private void registerUser(){
@@ -73,34 +94,64 @@ public class RegisterActivity extends NavigationActivity implements View.OnClick
         String pwd = edtPassword.getText().toString();
         String repwd = edtRePassword.getText().toString();
         Boolean gender = radioGender.indexOfChild(findViewById(radioGender.getCheckedRadioButtonId())) == 0;
-        if(AppUtils.isEmptyString(name)){
-            edtName.setError("Không được bỏ trống tên");
-        }else if(AppUtils.isEmptyString(phone)){
-            edtPhone.setError("Không được bỏ trống số diện thoại");
-        }else if(AppUtils.isEmptyString(usn)){
-            edtUserName.setError("Không được bỏ trống tên tài khoản");
-        }else if(AppUtils.isEmptyString(pwd)){
-            edtPassword.setError("Không được bỏ trống mật khẩu");
-        }else if(!pwd.equals(repwd)){
-            edtRePassword.setError("Mật khẩu nhập lại không khớp");
-        }else {
-            loadingDialog.show();
-            User user = new User(name, phone, pwd, gender, 1);
-            firebaseManager.writeRef(AppContants.FIREBASE_USER_TABLE, usn, user, new FirebaseManager.Callback() {
+        if(AppUtils.isNetworkAvailable(this)) {
+            if(!isDupplicateAccount) {
+                if (AppUtils.isEmptyString(name)) {
+                    edtName.setError("Không được bỏ trống tên");
+                } else if (AppUtils.isEmptyString(phone)) {
+                    edtPhone.setError("Không được bỏ trống số diện thoại");
+                } else if (AppUtils.isEmptyString(usn)) {
+                    edtUserName.setError("Không được bỏ trống tên tài khoản");
+                } else if (AppUtils.isEmptyString(pwd)) {
+                    edtPassword.setError("Không được bỏ trống mật khẩu");
+                } else if (!pwd.equals(repwd)) {
+                    edtRePassword.setError("Mật khẩu nhập lại không khớp");
+                } else {
+                    loadingDialog.show();
+                    User user = new User(name, phone, pwd, gender, 1);
+                    firebaseManager.writeRef(AppContants.FIREBASE_USER_TABLE, usn, user, new FirebaseManager.Callback() {
+                        @Override
+                        public void success(DataSnapshot dataSnapshot) {
+                            loadingDialog.dismiss();
+                            Snackbar.make(layout, "Đăng ký thành công", Snackbar.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void failed() {
+                            loadingDialog.dismiss();
+                            Snackbar.make(layout, "Đăng ký thất bại", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }else  edtUserName.setError("Tài khoản đã tồn tại");
+        }else Snackbar.make(layout, "Vui lòng kiểm tra lại kết nối", Snackbar.LENGTH_LONG).show();
+
+    }
+
+    private void checkDupplicateAccount(final String usn){
+        if(AppUtils.isNetworkAvailable(this)) {
+            FirebaseManager firebaseManager = new FirebaseManager();
+            firebaseManager.getRef(AppContants.FIREBASE_USER_TABLE, new FirebaseManager.Callback() {
                 @Override
                 public void success(DataSnapshot dataSnapshot) {
-                    loadingDialog.dismiss();
-                    Snackbar.make(layout, "Đăng ký thành công", Snackbar.LENGTH_LONG).show();
+                    if (dataSnapshot.getValue() != null) {
+                        for (DataSnapshot child: dataSnapshot.getChildren()) {
+                            if(child.getKey().equals(usn)){
+                                isDupplicateAccount = true;
+                            }
+                        }
+                        if(isDupplicateAccount) edtUserName.setError("Tài khoản đã tồn tại");
+
+                    }
                 }
 
                 @Override
                 public void failed() {
-                    loadingDialog.dismiss();
-                    Snackbar.make(layout, "Đăng ký thất bại", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(layout, "Đã có lỗi xảy ra, vui lòng thử lại", Snackbar.LENGTH_LONG).show();
                 }
             });
-        }
 
+        }else Snackbar.make(layout, "Vui lòng kiểm tra lại kết nối", Snackbar.LENGTH_LONG).show();
     }
 
     private void initDialog() {

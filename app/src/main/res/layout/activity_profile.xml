@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/registerPanel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,7 +29,7 @@
                     android:layout_toLeftOf="@+id/control">
 
                     <ImageView
-                        android:id="@+id/imPlace"
+                        android:id="@+id/imgAvatar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="10dp"
@@ -111,14 +112,41 @@
                             android:textColorHint="@color/color_text" />
                     </android.support.design.widget.TextInputLayout>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.8"
+                            android:background="@android:drawable/ic_menu_my_calendar" />
+
+                        <EditText
+                            android:id="@+id/edtDOB"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:backgroundTint="@color/color_text"
+                            android:editable="false"
+                            android:hint="Chọn ngày sinh"
+                            android:lines="1"
+                            android:textColor="@color/color_text"
+                            android:textColorHint="@color/color_text" />
+
+                    </LinearLayout>
+
                     <RadioGroup
+                        android:id="@+id/rai"
                         android:layout_width="match_parent"
                         android:layout_marginTop="10dp"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
                         <RadioButton
-                            android:id="@+id/rbRegisterMale"
+                            android:id="@+id/rbMale"
                             style="?android:attr/checkboxStyle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -142,9 +170,20 @@
                         android:layout_marginRight="-10dp"
                         android:background="@color/bg_button_press" />
 
+                    <Button
+                        android:id="@+id/btnChangePwd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/background_button"
+                        android:text="Đổi mật khẩu"
+                        android:textColor="@android:color/white" />
+
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_marginTop="10dp"
+                        app:passwordToggleEnabled="true"
                         android:layout_height="wrap_content">
 
                         <EditText
@@ -153,7 +192,10 @@
                             android:layout_height="wrap_content"
                             android:backgroundTint="@color/color_text"
                             android:hint="Password"
+                            android:inputType="textPassword"
                             android:lines="1"
+                            android:text="*********"
+                            android:enabled="false"
                             android:textColor="@color/color_text"
                             android:textColorHint="@color/color_text" />
                     </android.support.design.widget.TextInputLayout>
@@ -169,6 +211,8 @@
                             android:layout_height="wrap_content"
                             android:backgroundTint="@color/color_text"
                             android:hint="Re Password"
+                            android:inputType="textPassword"
+                            android:visibility="gone"
                             android:lines="1"
                             android:textColor="@color/color_text"
                             android:textColorHint="@color/color_text" />
@@ -183,6 +227,7 @@
                         android:background="@drawable/background_button"
                         android:text="Update"
                         android:textColor="@android:color/white" />
+
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

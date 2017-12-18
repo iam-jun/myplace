@@ -41,7 +41,7 @@ public class NoteActivity extends NavigationActivity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         int id = getIntent().getExtras().getInt("ID_PLACE");
-        placeChoose = MainActivity.arrPlace.get(id);
+        placeChoose = MainActivity2.arrPlace.get(id);
         initData();
         initViews();
     }
@@ -66,7 +66,7 @@ public class NoteActivity extends NavigationActivity implements AdapterView.OnIt
         this.tvInfo = (TextView) findViewById(R.id.tvInfo);
 
         this.tvTitle.setText(placeChoose.getTitle());
-        this.tvDistance.setText(Float.toString(placeChoose.getDistance()) + " km");
+//        this.tvDistance.setText(Float.toString(placeChoose.getDistance()) + " km");
         this.tvScore.setText(Integer.toString(placeChoose.getScore()) + " điểm");
         this.tvAddress.setText(placeChoose.getAddress());
         this.tvInfo.setText(placeChoose.getInfo());
@@ -76,7 +76,7 @@ public class NoteActivity extends NavigationActivity implements AdapterView.OnIt
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Note note = arrNote.get(i);
         Intent intent = new Intent(this, MapRouteActivity.class);
-        intent.putExtra("ID_PLACE",placeChoose.getId() );
+//        intent.putExtra("ID_PLACE",placeChoose.getId() );
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 //            LinearLayout layout = (LinearLayout) view.findViewById(R.id.panel_note);
 //            ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, layout, "panel_note");
@@ -88,15 +88,15 @@ public class NoteActivity extends NavigationActivity implements AdapterView.OnIt
 
     @Override
     public void onClick(View view) {
-//        Intent intent = new Intent(this, MapActivity.class);
+//        Intent intent = new Intent(this, MainActivity.class);
 //        intent.putExtra("ID_PLACE",placeChoose.getId() );
 //        startActivity(intent);
         //Note note = arrNote.get(i);
         Intent intent = new Intent(this, MapRouteActivity.class);
-        intent.putExtra("ID_PLACE",placeChoose.getId() );
+//        intent.putExtra("ID_PLACE",placeChoose.getId() );
 //        final Intent intent = new
 //                Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?" +
-//                "saddr=" + MainActivity.myLocation.getLatitude() + "," + MainActivity.myLocation.getLongitude() + "&daddr=" + placeChoose.getLatitu() + "," +
+//                "saddr=" + MainActivity2.myLocation.getLatitude() + "," + MainActivity2.myLocation.getLongitude() + "&daddr=" + placeChoose.getLatitu() + "," +
 //                placeChoose.getLongitu()));
 //        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
         startActivity(intent);

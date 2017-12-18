@@ -39,6 +39,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.tu.place.R;
+import com.tu.place.activity.MainActivity;
+import com.tu.place.data.CategoryKeeper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +80,12 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
       @Override
       public void onClick(final View v) {
         final Activity activity = getActivity();
+        final CategoryKeeper keeper = CategoryKeeper.getInstance();
+        final ArrayList<String> selectedTypes = new ArrayList<>();
+        selectedTypes.addAll(keeper.getSelectedTypes());
+        ((MainActivity)activity).filterTypeList.clear();
+        ((MainActivity)activity).filterTypeList.addAll(selectedTypes);
+        ((MainActivity)activity).filterPlace();
         if (activity instanceof FilterContract.FilterView){
           ((FilterContract.FilterView) activity).onFilterDialogClose(true);
         }

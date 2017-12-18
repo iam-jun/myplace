@@ -1,58 +1,84 @@
 package com.tu.place.adapter;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.tu.place.R;
-import com.tu.place.model.Friend;
 import com.tu.place.model.Place;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by SEV_USER on 4/25/2017.
  */
 
-public class AdapterPlace extends BaseAdapter{
-    private ArrayList<Place> arrPalce;
+public class AdapterPlace extends RecyclerView.Adapter<AdapterPlace.MyViewHolder> {
 
-    public AdapterPlace(Context context, ArrayList<Place> arrPalce) {
-        super(context, arrPalce);
-        this.arrPalce = arrPalce;
+    private List<Place> arrPlace;
+    private ItemListener listener;
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        public TextView tvTitle, tvContent, tvAdress;
+        public ImageView imPlace;
+
+        public MyViewHolder(View view) {
+            super(view);
+
+            imPlace = (ImageView) view.findViewById(R.id.imPlace);
+            tvTitle = (TextView) view.findViewById(R.id.tvTitle);
+            tvContent = (TextView) view.findViewById(R.id.tvContent);
+            tvAdress = (TextView) view.findViewById(R.id.tvAddress);
+//            TextView tvDistance = (TextView) view.findViewById(R.id.tvDistance);
+        }
+    }
+
+
+    public AdapterPlace(List<Place> arrPlace, ItemListener listener) {
+        this.arrPlace = arrPlace;
+        this.listener = listener;
     }
 
     @Override
-    public View getView(int position, View v, ViewGroup parent) {
-        v = super.getView(position, v, parent);
-        ImageView imPlace = (ImageView) v.findViewById(R.id.imPlace);
-        TextView tvTitle = (TextView) v.findViewById(R.id.tvTitle);
-        TextView tvContent = (TextView) v.findViewById(R.id.tvContent);
-        TextView tvAdress = (TextView) v.findViewById(R.id.tvAddress);
-        TextView tvDistance = (TextView) v.findViewById(R.id.tvDistance);
-        Place place = arrPalce.get(position);
-        tvTitle.setText(place.getTitle());
-        tvContent.setText(place.getContent());
-        tvAdress.setText(place.getAddress());
-        tvAdress.setText(place.getDistance() + " km");
-        Glide.with(v.getContext()).load(place.getImg()).placeholder(R.drawable.ic_map).error(R.drawable.ic_map).into(imPlace);
-        return v;
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_place, parent, false);
+
+        return new MyViewHolder(itemView);
     }
 
     @Override
-    protected int animationId() {
-        return R.anim.translate;
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+        Place place = arrPlace.get(position);
+        holder.tvTitle.setText(place.getTitle());
+        holder.tvContent.setText(place.getContent());
+        holder.tvAdress.setText(place.getAddress());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onItemClick(position);
+            }
+        });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                listener.onItemLongClick(position);
+                return true;
+            }
+        });
     }
 
     @Override
-    protected int getIdItem() {
-        return R.layout.item_place;
+    public int getItemCount() {
+        return arrPlace.size();
     }
+
+    public interface ItemListener{
+        void onItemClick(int position);
+        void onItemLongClick(int position);
+    }
+
 }

@@ -23,4 +23,20 @@
     <string name="action_settings">Settings</string>
     <string name="button">Button</string>
     <string name="todo">TODO</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="spn_place_type">
+        <item>ATM</item>
+        <item>Food</item>
+        <item>Drink</item>
+        <item>Hotel</item>
+        <item>Health</item>
+        <item>Shop</item>
+        <item>Super Market</item>
+        <item>Hospital</item>
+        <item>Bank</item>
+        <item>BusStop</item>
+        <item>Entertaiment</item>
+    </string-array>
 </resources>

@@ -1,123 +1,284 @@
 package com.tu.place.activity;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.firebase.database.DataSnapshot;
+import com.squareup.picasso.Picasso;
 import com.tu.place.R;
-import com.tu.place.adapter.AdapterPlace;
-import com.tu.place.data.CategoryKeeper;
-import com.tu.place.filter.FilterContract;
 import com.tu.place.filter.FilterDialogFragment;
 import com.tu.place.filter.FilterPresenter;
+import com.tu.place.firebase.FirebaseManager;
+import com.tu.place.fragment.MapFragment;
+import com.tu.place.fragment.PlaceFragment;
+import com.tu.place.fragment.PlaceListFragment;
+import com.tu.place.model.ArrayList;
 import com.tu.place.model.Place;
+import com.tu.place.model.User;
+import com.tu.place.utils.AppContants;
+import com.tu.place.utils.AppDialogManager;
+import com.tu.place.utils.AppUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
- * Created by SEV_USER on 4/25/2017.
+ * Created by Huynh Tran Hien on 19/11/2017.
  */
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, AdapterView.OnItemClickListener, AdapterView.OnClickListener, FilterContract.FilterView {
-    public static GoogleMap mGoogleMap;
-    private ListView lvPlace;
-    private AdapterPlace adapterPlace;
-    public static ArrayList<Place> arrPlace;
-    public static Location myLocation;
-    private ListView listView;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private FloatingActionButton btnFilter, btnSwitch, btnIncreaseRadius, btnDescreaseRadius;
+    private PlaceFragment placeFragment;
     private DrawerLayout drawerLayout;
+    private Toolbar toolbar;
+    private NavigationView navigationView;
+    private View navHeader;
     private ActionBarDrawerToggle toggle;
-    public int radiusFind = 1;
-    public TextView radiusTextView;
-    public FloatingActionButton radiusBtn;
-    public static ArrayList<Place> arrPlaceResult;
+    private ImageView imAvatar;
+    private TextView tvName;
+    public static User user;
+    private String TAG = "Main_Activity";
+    private String current_fragment;
+    public PlaceAutocompleteFragment autocompleteFragment;
+    public java.util.ArrayList<Place> listPlace;
+    public java.util.ArrayList<Place> filterListPlace;
+    public java.util.ArrayList<String> filterTypeList;
+    MapFragment mapFragment;
+    PlaceListFragment placeListFragment;
+    public Location myLocation;
+    public Float radius;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_place);
-        initData();
+        setContentView(R.layout.activity_main);
         initApp();
-        for (Place place : arrPlace) {
-            Location location = new Location("");
-            location.setLatitude(place.getLatitu());
-            location.setLongitude(place.getLongitu());
-            float distace = myLocation.distanceTo(location) / 1000;
-            place.setDistance(distace);
-        }
-        initViews();
-        listView = (ListView) findViewById(R.id.lvPlace);
-
     }
 
     private void initApp() {
-        initMap();
-        initDrawerLayout();// moi them
+        initViews();
+        initFragment();
+        initDrawerLayout();
     }
 
     private void initDrawerLayout() {
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(this,drawerLayout,null,R.string.app_name,R.string.app_name);
-        drawerLayout.addDrawerListener(toggle);
+        //toggle = new ActionBarDrawerToggle(this,drawerLayout,null,R.string.app_name,R.string.app_name);
+        //drawerLayout.addDrawerListener(toggle);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            // This method will trigger on item Click of navigation menu
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                //Check to see which item was being clicked and perform appropriate action
+                switch (menuItem.getItemId()) {
+                    //Replacing the main content with ContentFragment Which is our Inbox View;
+                    case R.id.nav_logout:
+                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean(AppContants.PRE_IS_LOGGED_IN, false).commit();
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        return true;
+
+                    default:
+                        // navItemIndex = 0;
+
+                }
+                return true;
+            }
+        });
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.title_activity_maps, R.string.title_activity_maps) {
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        //Setting the actionbarToggle to drawer layout
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+        //calling sync state is necessary or else your hamburger icon wont show up
+        actionBarDrawerToggle.syncState();
     }
 
-    private void initMap() {
-        LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+    private void initViews() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navHeader = navigationView.getHeaderView(0);
+        imAvatar = (ImageView) navHeader.findViewById(R.id.imAvatar);
+        tvName = (TextView) navHeader.findViewById(R.id.tvName);
+        btnFilter = (FloatingActionButton) findViewById(R.id.btnFilter);
+        btnSwitch = (FloatingActionButton) findViewById(R.id.btnSwitch);
+        btnIncreaseRadius = (FloatingActionButton) findViewById(R.id.btnIncreaseRadius);
+        btnDescreaseRadius = (FloatingActionButton) findViewById(R.id.btnDescreaseRadius);
+        btnFilter.setOnClickListener(this);
+        btnSwitch.setOnClickListener(this);
+        btnIncreaseRadius.setOnClickListener(this);
+        btnDescreaseRadius.setOnClickListener(this);
+        imAvatar.setOnClickListener(this);
+        autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
-        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        listPlace = new ArrayList<>();
+        filterListPlace = new ArrayList<>();
+        filterTypeList = new ArrayList<>();
+        radius = 5000f;
 
-        Location location;
+    }
+    public void saveCurrentLocation(double lat, double longi){
+        FirebaseManager firebaseManager = new FirebaseManager();
+        user.latitu = lat;
+        user.longitu = longi;
+        firebaseManager.writeRef(AppContants.FIREBASE_USER_TABLE, user.username, user, new FirebaseManager.Callback() {
+            @Override
+            public void success(DataSnapshot dataSnapshot) {
 
-        if (network_enabled) {
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
             }
-            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-            if(location!=null){
-                myLocation = location;
+            @Override
+            public void failed() {
+
             }
+        });
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(User user) {
+        tvName.setText(user.name);
+        if(!AppUtils.isEmptyString(user.url)) {
+            Picasso.with(this).load(user.url).into(imAvatar);
         }
+        this.user = user;
+    };
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mGoogleMap = googleMap;
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnFilter:
+                final FilterDialogFragment dialogFragment = new FilterDialogFragment();
+                final FilterPresenter filterPresenter = new FilterPresenter();
+                dialogFragment.setPresenter(filterPresenter);
+                dialogFragment.show(getFragmentManager(),"dialog_fragment");
+                break;
+            case R.id.imAvatar:
+                Intent intent = new Intent(this,ChangeInfoActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btnSwitch:
+                changeViewMode();
+                break;
+            case R.id.btnIncreaseRadius:
+                increaseRadius();
+                break;
+            case R.id.btnDescreaseRadius:
+                descreaseRadius();
+                break;
+        }
+    }
+
+    private void increaseRadius(){
+//        if(radius<10000f) {
+            radius += 1000f;
+            Toast.makeText(this,"Bán kính " + (radius/1000)+"km",  Toast.LENGTH_SHORT).show();
+            mapFragment.mapController.loadPlace();
+//        }
+    }
+
+    private void descreaseRadius(){
+        if(radius>1000f) {
+            radius -= 1000f;
+            Toast.makeText(this,"Bán kính " + (radius/1000)+"km",  Toast.LENGTH_SHORT).show();
+            mapFragment.mapController.loadPlace();
+        }
+    }
+
+    public void filterPlace(){
+        Log.d(TAG, "filterList size "+filterListPlace.size());
+        filterListPlace.clear();
+        filterListPlace.addAll(listPlace);
+        Log.d(TAG, "filterList size 1 "+filterListPlace.size());
+        Log.d(TAG, "listPlace size "+listPlace.size());
+        if (!filterTypeList.isEmpty()){
+//            filterListPlace.clear();
+            for (int i=0; i < filterListPlace.size(); i++) {
+                for (final String filter : filterTypeList){
+                    if (filter.trim().equalsIgnoreCase(filterListPlace.get(i).getContent().trim())){
+                        Log.d(AppContants.TAG, filterListPlace.get(i).getTitle());
+                        filterListPlace.remove(i);
+                    }
+                }
+            }
+        }
+        mapFragment.mapController.drawPlace();
+        placeListFragment.showPlace();
+        Log.d(TAG, "filterList size 2 "+filterListPlace.size());
+
+//        if (!filterListPlace.isEmpty()){
+//            foundPlaces.removeAll(placesToRemove);
+//        }
+    }
+
+    private void changeViewMode(){
+        if(current_fragment.equals(mapFragment.getClass().getName())){
+            current_fragment = placeListFragment.getClass().getName();
+            changeFabBg(android.R.drawable.ic_dialog_map);
+            AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), placeListFragment);
+        }else {
+            current_fragment = mapFragment.getClass().getName();
+            changeFabBg(android.R.drawable.ic_menu_sort_by_size);
+            AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), mapFragment);
+        }
+    }
+
+    private void changeFabBg(int res){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            btnSwitch.setImageDrawable(getResources().getDrawable(res, this.getTheme()));
+        } else {
+            btnSwitch.setImageDrawable(getResources().getDrawable(res));
+        }
     }
 
     private void startActivityWithTaget(Class target) {
@@ -131,129 +292,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void initViews() {
-        lvPlace = (ListView) findViewById(R.id.lvPlace);
-        adapterPlace = new AdapterPlace(this,arrPlace);
-        radiusTextView = (TextView) findViewById(R.id.textViewRadius);
-        radiusBtn = (FloatingActionButton) findViewById(R.id.btnReload);
-        lvPlace.setAdapter(adapterPlace);
-        lvPlace.setOnItemClickListener(this);
-        radiusTextView.setText(radiusFind + " km");
-        radiusBtn.setOnClickListener(this);
-        SortPlaceByRadius(arrPlace);
+
+    private void initFragment() {
+        mapFragment = new MapFragment();
+        placeListFragment = new PlaceListFragment();
+        current_fragment = mapFragment.getClass().getName();
+        AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), mapFragment);
     }
 
-    private void initData() {
-        arrPlace = new ArrayList<>();
-        arrPlace.add(new Place(0,"Quán gà nướng Út Hân","Food","none","161, Đường 154, Tân Phú, Quận 9, Hồ Chí Minh, Việt Nam","none", "none",5,10.866729,106.809573));
-        arrPlace.add(new Place(1,"Hope Hotel","Hotel","none","49 Đường số 154, Tân Phú, Quận 9, Hồ Chí Minh, Việt Nam","none", "none",5,10.867404,106.808307));
-        arrPlace.add(new Place(2,"Cafe Mộc 47","Drink","none","47/1 Đường 120, Tân Phú, Quận 9, Hồ Chí Minh, Việt Nam","none", "none",5,10.865623,106.805228));
-        arrPlace.add(new Place(3,"Suối Tiên","Play","none","Xa lộ Hà Nội, Tân Phú, Quận 9, Hồ Chí Minh, Việt Nam","none", "none",5,10.863821,106.802020));
-        arrPlace.add(new Place(4,"Lotte Cinema Cộng Hoà","Food","none","20 Cộng Hòa, Phường 12, Tân Bình, Hồ Chí Minh, Việt Nam","none", "none",5,10.800864,106.653084));
-        arrPlace.add(new Place(5,"Cafe Panda","Drink","none","21, Đường số 120, Tân Phú, Hồ Chí Minh, Việt Nam","none", "none",5,10.866358, 106.804271));
-        arrPlace.add(new Place(6,"Cà Phê Ngộ","Drink","none","Đường số 154, Long Thạnh Mỹ, Hồ Chí Minh, Việt Nam","none", "none",5,10.864662, 106.811713));
-        arrPlace.add(new Place(7,"Siêu thị Co.opXtra Thủ Đức","Shop","none","934 QL 1A, Linh Trung, Hồ Chí Minh, Việt Nam","none", "none",5,10.868411, 106.776179));
-        arrPlace.add(new Place(8,"Shop Nghèo","Shop","none","75 Nam Cao, Tân Phú, Quận 9, Hồ Chí Minh, Việt Nam","none", "none",5,10.861066, 106.798859));
+    public void showFragment(Place place) {
+//        placeFragment = new PlaceFragment(place);
+//        AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), placeFragment);
+//        placeFragment.setData(place);
+        AppDialogManager.onShowPlaceDialog(this, place);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Intent intent = new Intent(this,NoteActivity.class);
-        Object o = listView.getItemAtPosition(i);
-        Place place = (Place) o;
-        intent.putExtra("ID_PLACE",place.getId() );
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            //LinearLayout layout = (LinearLayout) view.findViewById(R.id.panel_place);
-            //ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(this,layout,"panel_place");
-            startActivity(intent);
-        }
-        else {
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public final boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu items for use in the action bar
-        final MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
+    public void hideFragment() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.show, R.anim.exit);
+        transaction.hide(placeFragment);
+        transaction.commit();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.map_action:
-                Intent intent = new Intent(this,MapActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.filter_in_list:
-                final FilterDialogFragment dialogFragment = new FilterDialogFragment();
-                final FilterPresenter filterPresenter = new FilterPresenter();
-                dialogFragment.setPresenter(filterPresenter);
-                dialogFragment.show(getFragmentManager(),"dialog_fragment");
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (toggle.onOptionsItemSelected(item)){
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public final void onFilterDialogClose(final boolean applyFilter) {
-        if (applyFilter) {
-            arrPlaceResult = new ArrayList<>(arrPlace);
-            arrPlaceResult = (ArrayList<Place>) filterPlaces(arrPlaceResult);
-            SortPlaceByRadius(arrPlaceResult);
-            adapterPlace = new AdapterPlace(this,arrPlaceResult);
-            lvPlace.setAdapter(adapterPlace);
-        }
-
-    }
-
-    private static List<Place> filterPlaces(ArrayList<Place> foundPlaces){
-        final Collection<Place> placesToRemove = new ArrayList<>();
-        final CategoryKeeper keeper = CategoryKeeper.getInstance();
-        final List<String> selectedTypes = keeper.getSelectedTypes();
-        if (!selectedTypes.isEmpty()){
-            for (final Place p: foundPlaces) {
-                for (final String filter : selectedTypes){
-                    if (filter.equalsIgnoreCase(p.getContent())){
-                        placesToRemove.add(p);
-                    }
-                }
-            }
-        }
-        if (!placesToRemove.isEmpty()){
-            foundPlaces.removeAll(placesToRemove);
-        }
-        //Log.i("FilteredPlaces", "After filtering on categories, there are " + foundPlaces.size());
-        return foundPlaces;
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btnReload:
-                radiusFind ++;
-                radiusTextView.setText(radiusFind + " km");
-                arrPlaceResult = new ArrayList<>(arrPlace);
-                SortPlaceByRadius(arrPlaceResult);
-                arrPlaceResult = (ArrayList<Place>) filterPlaces(arrPlaceResult);
-                break;
-
-        }
-    }
-
-    public void SortPlaceByRadius(ArrayList<Place> foundPlaces)
-    {
-        arrPlaceResult = new ArrayList<>();
-        for (Place place : foundPlaces) {
-            if(place.getDistance() <= radiusFind)
-                arrPlaceResult.add(place);
-        }
-        adapterPlace = new AdapterPlace(this,arrPlaceResult);
-        lvPlace.setAdapter(adapterPlace);
-    }
 
 }
+

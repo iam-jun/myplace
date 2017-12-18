@@ -54,11 +54,11 @@ public class MapRouteActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_main);
         initApp();
 
         int id = getIntent().getExtras().getInt("ID_PLACE");
-        placeChoose = MainActivity.arrPlace.get(id);
+        placeChoose = MainActivity2.arrPlace.get(id);
 
 
 }
@@ -83,15 +83,15 @@ public class MapRouteActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void initMap() {
-        supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        supportMapFragment.getMapAsync(this);
+//        supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+//        supportMapFragment.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         GMapV2Direction md = new GMapV2Direction();
-        this.route(new LatLng(MainActivity.myLocation.getLatitude(),MainActivity.myLocation.getLongitude()), new LatLng(placeChoose.getLatitu(),placeChoose.getLongitu()),
+        this.route(new LatLng(MainActivity2.myLocation.getLatitude(), MainActivity2.myLocation.getLongitude()), new LatLng(placeChoose.getLatitu(),placeChoose.getLongitu()),
                 GMapV2Direction.MODE_WALKING);
 
         LatLng latln = new LatLng(placeChoose.getLatitu(), placeChoose.getLongitu());
