@@ -79,11 +79,11 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
 //                                Log.d("Firebase", dataSnapshot.toString());
                                 for (DataSnapshot child: dataSnapshot.getChildren()) {
                                     Place place = child.getValue(Place.class);
-                                    Location location = new Location(place.getTitle());
-                                    location.setLatitude(place.getLatitu());
-                                    location.setLongitude(place.getLongitu());
-                                    if(mainActivity.myLocation.distanceTo(location)<=mainActivity.radius)
-                                         mainActivity.listPlace.add(place);
+//                                    Location location = new Location(place.getTitle());
+//                                    location.setLatitude(place.getLatitu());
+//                                    location.setLongitude(place.getLongitu());
+//                                    if(mainActivity.myLocation.distanceTo(location)<=mainActivity.radius)
+                                        mainActivity.listPlace.add(place);
                                 }
                                 mainActivity.filterPlace();
 //                                drawPlace();
@@ -149,14 +149,24 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         LatLng latln = new LatLng(latitude, longitude);
-        if (mMarker == null) {
-            mMarker = addMarker("My location", BitmapDescriptorFactory.HUE_RED, latitude, longitude,"");
-            //googleMap.moveCamera(CameraUpdateFactory.zoomTo(17.0f));
-        } else {
-            mMarker.setPosition(latln);
+        if(!isLocationInMarkers(location)) {
+            if (mMarker == null) {
+                mMarker = addMarker("My location", BitmapDescriptorFactory.HUE_RED, latitude, longitude, "");
+                //googleMap.moveCamera(CameraUpdateFactory.zoomTo(17.0f));
+            } else {
+                mMarker.setPosition(latln);
+            }
         }
         CameraPosition cameraPosition = new CameraPosition(latln, 15, 0, 0);
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    public boolean isLocationInMarkers(Location location){
+        for(int i=0; i<mainActivity.filterListPlace.size(); i++){
+            if(mainActivity.filterListPlace.get(i).getLatitu()==location.getLatitude() && mainActivity.filterListPlace.get(i).getLongitu()==location.getLongitude())
+                return true;
+        }
+        return false;
     }
 
 

@@ -72,32 +72,16 @@
             android:id="@+id/content_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
             android:orientation="horizontal" />
 
         <LinearLayout
+            android:id="@+id/lnControl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:layout_alignParentRight="true">
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btnIncreaseRadius"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                map:backgroundTint="@android:color/holo_blue_dark"
-                android:clickable="true"
-                map:srcCompat="@android:drawable/ic_input_add" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btnDescreaseRadius"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                map:backgroundTint="@android:color/holo_blue_dark"
-                map:srcCompat="@android:drawable/button_onoff_indicator_on" />
+            android:layout_alignParentRight="true"
+            android:orientation="vertical">
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/btnFilter"

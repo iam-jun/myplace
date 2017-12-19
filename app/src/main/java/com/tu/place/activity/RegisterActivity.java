@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -28,7 +29,7 @@ import com.tu.place.utils.AppUtils;
  * Created by SEV_USER on 4/26/2017.
  */
 
-public class RegisterActivity extends NavigationActivity implements View.OnClickListener{
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
     private static final int KILL_SELF = 1;
     private Button btnRegister;
     private EditText edtName, edtPhone, edtUserName, edtPassword, edtRePassword;

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,7 @@ import com.tu.place.R;
 import com.tu.place.activity.MainActivity;
 import com.tu.place.adapter.AdapterPlace;
 import com.tu.place.model.Place;
-import com.tu.place.utils.AppDialogManager;
+import com.tu.place.utils.AppUtils;
 
 public class PlaceListFragment extends Fragment {
 
@@ -41,7 +42,22 @@ public class PlaceListFragment extends Fragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
 //        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        rootView.setFocusableInTouchMode(true);
+        rootView.requestFocus();
+        rootView.setOnKeyListener( new View.OnKeyListener()
+        {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event )
+            {
+                if( keyCode == KeyEvent.KEYCODE_BACK )
+                {
+                    return true;
+                }
+                return false;
+            }
+        } );
         loadPlace(((MainActivity)getActivity()).filterListPlace);
+
         return rootView;
     }
 
@@ -53,6 +69,7 @@ public class PlaceListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity)getActivity()).lnControl.setVisibility(View.VISIBLE);
         adapter.notifyDataSetChanged();
     }
 
@@ -60,7 +77,8 @@ public class PlaceListFragment extends Fragment {
         adapter = new AdapterPlace(list, new AdapterPlace.ItemListener() {
             @Override
             public void onItemClick(int position) {
-                AppDialogManager.onShowPlaceDialog(getActivity(), ((MainActivity)getActivity()).filterListPlace.get(position));
+//                AppDialogManager.onShowPlaceDialog(getActivity(), ((MainActivity)getActivity()).filterListPlace.get(position));
+                AppUtils.replaceFragmentWithAnimation(getActivity().getSupportFragmentManager(), new PlaceDetailFragment(((MainActivity)getActivity()).filterListPlace.get(position)));
             }
 
             @Override
@@ -87,4 +105,6 @@ public class PlaceListFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
 }

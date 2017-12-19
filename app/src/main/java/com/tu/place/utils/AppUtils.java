@@ -23,6 +23,15 @@ public class AppUtils {
                 .length() <= 0);
     }
 
+    public static boolean checkContains(String container, String value){
+        String[] arr = value.split(" ");
+        for(int i=0; i<arr.length; i++){
+            if(container.toLowerCase().contains(arr[i].toLowerCase()))
+                return true;
+        }
+        return false;
+    }
+
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager manager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -104,9 +113,9 @@ public class AppUtils {
         transaction.replace(R.id.content_main, fragment);
         transaction.setCustomAnimations(R.anim.show, R.anim.exit);
         transaction.show(fragment);
-        transaction.commit();
-//        transaction.addToBackStack(backStateName);
-//        transaction.commitAllowingStateLoss();
+//        transaction.commit();
+        transaction.addToBackStack(backStateName);
+        transaction.commitAllowingStateLoss();
     }
 
     public static void hideFragmentWithAnimation(FragmentManager fm, Fragment fragment) {

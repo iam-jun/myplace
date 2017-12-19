@@ -57,7 +57,7 @@ public class CategoryKeeper {
     public final List<String> getSelectedTypes(){
         final List<String> selectedTypes = new ArrayList<>();
         for (final FilterItem item : categories){
-            if (!item.getSelected()){
+            if (item.getSelected()){
                 // Because places with food are sub-categorized by
                 // food type, add them to the filter list
                 selectedTypes.add(item.getTitle());

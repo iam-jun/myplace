@@ -35,7 +35,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tu.place.R;
@@ -61,11 +63,16 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     getDialog().setTitle("Filter View");
     final View view = inflater.inflate(R.layout.filter_view, container,false);
     final ListView listView = (ListView) view.findViewById(R.id.filterView);
+    final EditText edtName = (EditText) view.findViewById(R.id.edtPlaceName);
+    final SeekBar sbScore = (SeekBar) view.findViewById(R.id.sbScore);
+    final SeekBar sbRadius = (SeekBar) view.findViewById(R.id.sbRadius);
     final List<FilterItem> filters = mPresenter.getFilteredCategories();
     final ArrayList<FilterItem> arrayList = new ArrayList<>();
     arrayList.addAll(filters);
     final FilterItemAdapter mFilterItemAdapter = new FilterItemAdapter(getActivity(), arrayList);
     listView.setAdapter(mFilterItemAdapter);
+    sbRadius.setProgress((((MainActivity)getActivity()).radius.intValue()-1)/1000);
+    sbScore.setProgress((((MainActivity)getActivity()).score-1));
 
     // Listen for Cancel/Apply
     final Button cancel = (Button) view.findViewById(R.id.btnCancel);
@@ -85,6 +92,9 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
         selectedTypes.addAll(keeper.getSelectedTypes());
         ((MainActivity)activity).filterTypeList.clear();
         ((MainActivity)activity).filterTypeList.addAll(selectedTypes);
+        ((MainActivity)activity).placeKey = edtName.getText().toString();
+        ((MainActivity)activity).score = sbScore.getProgress()+1;
+        ((MainActivity)activity).radius = (sbRadius.getProgress()+1) * 1000f;
         ((MainActivity)activity).filterPlace();
         if (activity instanceof FilterContract.FilterView){
           ((FilterContract.FilterView) activity).onFilterDialogClose(true);

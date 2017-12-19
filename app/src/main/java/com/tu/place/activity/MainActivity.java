@@ -20,23 +20,23 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.squareup.picasso.Picasso;
 import com.tu.place.R;
+import com.tu.place.data.CategoryKeeper;
 import com.tu.place.filter.FilterDialogFragment;
 import com.tu.place.filter.FilterPresenter;
 import com.tu.place.firebase.FirebaseManager;
 import com.tu.place.fragment.MapFragment;
+import com.tu.place.fragment.PlaceDetailFragment;
 import com.tu.place.fragment.PlaceFragment;
 import com.tu.place.fragment.PlaceListFragment;
 import com.tu.place.model.ArrayList;
 import com.tu.place.model.Place;
 import com.tu.place.model.User;
 import com.tu.place.utils.AppContants;
-import com.tu.place.utils.AppDialogManager;
 import com.tu.place.utils.AppUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -49,7 +49,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private FloatingActionButton btnFilter, btnSwitch, btnIncreaseRadius, btnDescreaseRadius;
+    private FloatingActionButton btnFilter, btnSwitch;
     private PlaceFragment placeFragment;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
@@ -65,10 +65,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public java.util.ArrayList<Place> listPlace;
     public java.util.ArrayList<Place> filterListPlace;
     public java.util.ArrayList<String> filterTypeList;
-    MapFragment mapFragment;
-    PlaceListFragment placeListFragment;
+    public MapFragment mapFragment;
+    public PlaceListFragment placeListFragment;
     public Location myLocation;
     public Float radius;
+    public String placeKey;
+    public int score;
+    public LinearLayout lnControl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,14 +141,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navHeader = navigationView.getHeaderView(0);
         imAvatar = (ImageView) navHeader.findViewById(R.id.imAvatar);
         tvName = (TextView) navHeader.findViewById(R.id.tvName);
+        lnControl = (LinearLayout) findViewById(R.id.lnControl);
         btnFilter = (FloatingActionButton) findViewById(R.id.btnFilter);
         btnSwitch = (FloatingActionButton) findViewById(R.id.btnSwitch);
-        btnIncreaseRadius = (FloatingActionButton) findViewById(R.id.btnIncreaseRadius);
-        btnDescreaseRadius = (FloatingActionButton) findViewById(R.id.btnDescreaseRadius);
         btnFilter.setOnClickListener(this);
         btnSwitch.setOnClickListener(this);
-        btnIncreaseRadius.setOnClickListener(this);
-        btnDescreaseRadius.setOnClickListener(this);
         imAvatar.setOnClickListener(this);
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -153,24 +153,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listPlace = new ArrayList<>();
         filterListPlace = new ArrayList<>();
         filterTypeList = new ArrayList<>();
+        final CategoryKeeper keeper = CategoryKeeper.getInstance();
+        final java.util.ArrayList<String> selectedTypes = new java.util.ArrayList<>();
+        selectedTypes.addAll(keeper.getSelectedTypes());
+        filterTypeList.clear();
+        filterTypeList.addAll(selectedTypes);
         radius = 5000f;
+        score = 1;
+        placeKey = "";
+
 
     }
     public void saveCurrentLocation(double lat, double longi){
         FirebaseManager firebaseManager = new FirebaseManager();
-        user.latitu = lat;
-        user.longitu = longi;
-        firebaseManager.writeRef(AppContants.FIREBASE_USER_TABLE, user.username, user, new FirebaseManager.Callback() {
-            @Override
-            public void success(DataSnapshot dataSnapshot) {
+        if(user!=null) {
+            user.latitu = lat;
+            user.longitu = longi;
+            firebaseManager.writeRef(AppContants.FIREBASE_USER_TABLE, user.username, user, new FirebaseManager.Callback() {
+                @Override
+                public void success(DataSnapshot dataSnapshot) {
 
-            }
+                }
 
-            @Override
-            public void failed() {
+                @Override
+                public void failed() {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -210,56 +220,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnSwitch:
                 changeViewMode();
                 break;
-            case R.id.btnIncreaseRadius:
-                increaseRadius();
-                break;
-            case R.id.btnDescreaseRadius:
-                descreaseRadius();
-                break;
-        }
-    }
-
-    private void increaseRadius(){
-//        if(radius<10000f) {
-            radius += 1000f;
-            Toast.makeText(this,"Bán kính " + (radius/1000)+"km",  Toast.LENGTH_SHORT).show();
-            mapFragment.mapController.loadPlace();
-//        }
-    }
-
-    private void descreaseRadius(){
-        if(radius>1000f) {
-            radius -= 1000f;
-            Toast.makeText(this,"Bán kính " + (radius/1000)+"km",  Toast.LENGTH_SHORT).show();
-            mapFragment.mapController.loadPlace();
         }
     }
 
     public void filterPlace(){
-        Log.d(TAG, "filterList size "+filterListPlace.size());
-        filterListPlace.clear();
-        filterListPlace.addAll(listPlace);
-        Log.d(TAG, "filterList size 1 "+filterListPlace.size());
-        Log.d(TAG, "listPlace size "+listPlace.size());
+        Log.d(AppContants.TAG, "filterList size "+filterListPlace.size());
+        Log.d(AppContants.TAG, "Distance "+radius+" score "+score +" key "+placeKey);
+//        filterListPlace.clear();
+//        filterListPlace.addAll(listPlace);
+        Log.d(AppContants.TAG, "filterList size 1 "+filterListPlace.size());
+        Log.d(AppContants.TAG, "listPlace size "+listPlace.size());
         if (!filterTypeList.isEmpty()){
-//            filterListPlace.clear();
-            for (int i=0; i < filterListPlace.size(); i++) {
+            filterListPlace.clear();
+            for (int i=0; i < listPlace.size(); i++) {
                 for (final String filter : filterTypeList){
-                    if (filter.trim().equalsIgnoreCase(filterListPlace.get(i).getContent().trim())){
-                        Log.d(AppContants.TAG, filterListPlace.get(i).getTitle());
-                        filterListPlace.remove(i);
+                    if (filter.trim().equalsIgnoreCase(listPlace.get(i).getContent().trim())){
+                        Location location = new Location(listPlace.get(i).getTitle());
+                        location.setLatitude(listPlace.get(i).getLatitu());
+                        location.setLongitude(listPlace.get(i).getLongitu());
+                        Log.d(AppContants.TAG, "Distance "+myLocation.distanceTo(location) +" score "+listPlace.get(i).getScore());
+                        if(myLocation.distanceTo(location)<radius && listPlace.get(i).getScore()>=score){
+                            Log.d(AppContants.TAG, listPlace.get(i).getTitle()+" case 1");
+                            if(AppUtils.isEmptyString(placeKey)) {
+                                filterListPlace.add(listPlace.get(i));
+                                Log.d(AppContants.TAG, listPlace.get(i).getTitle()+" case 2");
+                            }else {
+                                if (AppUtils.checkContains(listPlace.get(i).getAddress(), placeKey) || AppUtils.checkContains(listPlace.get(i).getTitle(), placeKey)) {
+                                    filterListPlace.add(listPlace.get(i));
+                                    Log.d(AppContants.TAG, listPlace.get(i).getTitle() + " case 3");
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
         mapFragment.mapController.drawPlace();
         placeListFragment.showPlace();
-        Log.d(TAG, "filterList size 2 "+filterListPlace.size());
+        Log.d(AppContants.TAG, "filterList size 2 "+filterListPlace.size());
 
 //        if (!filterListPlace.isEmpty()){
 //            foundPlaces.removeAll(placesToRemove);
 //        }
     }
+
 
     private void changeViewMode(){
         if(current_fragment.equals(mapFragment.getClass().getName())){
@@ -300,11 +304,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), mapFragment);
     }
 
+    public void showDirection(Place place){
+        current_fragment = mapFragment.getClass().getName();
+        changeFabBg(android.R.drawable.ic_menu_sort_by_size);
+        AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), mapFragment);
+        mapFragment.showPlace(place);
+    }
+
     public void showFragment(Place place) {
 //        placeFragment = new PlaceFragment(place);
 //        AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), placeFragment);
 //        placeFragment.setData(place);
-        AppDialogManager.onShowPlaceDialog(this, place);
+//        AppDialogManager.onShowPlaceDialog(this, place);
+
+        AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), new PlaceDetailFragment(place));
     }
 
     public void hideFragment() {
@@ -322,6 +335,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+// dont call **super**, if u want disable back button in current screen.
+    }
 }
 

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, PlaceSe
 
         mMapView.getMapAsync(this);
         ((MainActivity)getActivity()).autocompleteFragment.setOnPlaceSelectedListener(this);
+        rootView.setFocusableInTouchMode(true);
+        rootView.requestFocus();
+        rootView.setOnKeyListener( new View.OnKeyListener()
+        {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event )
+            {
+                if( keyCode == KeyEvent.KEYCODE_BACK )
+                {
+                    return true;
+                }
+                return false;
+            }
+        } );
         return rootView;
     }
 
@@ -84,8 +99,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, PlaceSe
     public void showPlace(Place place) {
 
         mGoogleMap.clear();
-//        route(new LatLng(MainActivity2.myLocation.getLatitude(), MainActivity2.myLocation.getLongitude()), new LatLng(place.getLatitu(),place.getLongitu()),
-//                GMapV2Direction.MODE_WALKING);
+        route(new LatLng(((MainActivity)getActivity()).myLocation.getLatitude(), ((MainActivity)getActivity()).myLocation.getLongitude()), new LatLng(place.getLatitu(),place.getLongitu()),
+                GMapV2Direction.MODE_WALKING);
     }
 
     protected void route(LatLng sourcePosition, LatLng destPosition, String mode) {
@@ -151,6 +166,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, PlaceSe
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity)getActivity()).lnControl.setVisibility(View.VISIBLE);
         Log.d(AppContants.TAG, "onResume");
 //        if(mapController!=null)
 //        mapController.drawPlace();
