@@ -39,7 +39,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     FirebaseManager firebaseManager;
     Dialog loadingDialog;
     private String TAG = "Register_Activity";
-    private boolean isDupplicateAccount =false;
+    private boolean isDupplicateAccount;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         radioGender = (RadioGroup) findViewById(R.id.radioGender);
         loadingDialog = AppDialogManager.createLoadingDialog(this);
         btnRegister.setOnClickListener(this);
+        isDupplicateAccount = false;
 
         edtUserName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -82,7 +83,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void afterTextChanged(Editable editable) {
                 checkDupplicateAccount(edtUserName.getText().toString());
-
             }
         });
         firebaseManager = new FirebaseManager();
@@ -136,9 +136,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void success(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.getValue() != null) {
+                        isDupplicateAccount = false;
                         for (DataSnapshot child: dataSnapshot.getChildren()) {
                             if(child.getKey().equals(usn)){
                                 isDupplicateAccount = true;
+                                return;
                             }
                         }
                         if(isDupplicateAccount) edtUserName.setError("Tài khoản đã tồn tại");

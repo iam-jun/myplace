@@ -60,7 +60,7 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                                  final Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
-    getDialog().setTitle("Filter View");
+    getDialog().setTitle("Lọc địa điểm");
     final View view = inflater.inflate(R.layout.filter_view, container,false);
     final ListView listView = (ListView) view.findViewById(R.id.filterView);
     final EditText edtName = (EditText) view.findViewById(R.id.edtPlaceName);
@@ -95,7 +95,7 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
         ((MainActivity)activity).placeKey = edtName.getText().toString();
         ((MainActivity)activity).score = sbScore.getProgress()+1;
         ((MainActivity)activity).radius = (sbRadius.getProgress()+1) * 1000f;
-        ((MainActivity)activity).filterPlace();
+        ((MainActivity)activity).mapFragment.mapController.loadPlace();
         if (activity instanceof FilterContract.FilterView){
           ((FilterContract.FilterView) activity).onFilterDialogClose(true);
         }

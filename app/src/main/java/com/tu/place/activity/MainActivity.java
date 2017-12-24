@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         selectedTypes.addAll(keeper.getSelectedTypes());
         filterTypeList.clear();
         filterTypeList.addAll(selectedTypes);
-        radius = 5000f;
+        radius = 1000f;
         score = 1;
         placeKey = "";
 
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        filterListPlace.addAll(listPlace);
         Log.d(AppContants.TAG, "filterList size 1 "+filterListPlace.size());
         Log.d(AppContants.TAG, "listPlace size "+listPlace.size());
-        if (!filterTypeList.isEmpty()){
+        if (!listPlace.isEmpty()){
             filterListPlace.clear();
             for (int i=0; i < listPlace.size(); i++) {
                 for (final String filter : filterTypeList){
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         location.setLatitude(listPlace.get(i).getLatitu());
                         location.setLongitude(listPlace.get(i).getLongitu());
                         Log.d(AppContants.TAG, "Distance "+myLocation.distanceTo(location) +" score "+listPlace.get(i).getScore());
-                        if(myLocation.distanceTo(location)<radius && listPlace.get(i).getScore()>=score){
+                        if(listPlace.get(i).getScore()>=score){
                             Log.d(AppContants.TAG, listPlace.get(i).getTitle()+" case 1");
                             if(AppUtils.isEmptyString(placeKey)) {
                                 filterListPlace.add(listPlace.get(i));

@@ -33,6 +33,12 @@
     </style>
 
     <style name="DialogTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowEnterAnimation">@anim/show</item>
         <item name="android:windowExitAnimation">@anim/exit</item>
     </style>

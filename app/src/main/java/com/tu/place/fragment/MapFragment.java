@@ -133,7 +133,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, PlaceSe
         mGoogleMap = googleMap;
         mapController = new MapController(googleMap, getActivity());
         mapController.initMap();
-        mapController.listionLocationChange();
+//        mapController.listionLocationChange();
         mapController.loadPlace();
 //        if(((MainActivity)getActivity()).filterTypeList!=null)
 //        ((MainActivity)getActivity()).filterPlace();
@@ -170,13 +170,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, PlaceSe
         Log.d(AppContants.TAG, "onResume");
 //        if(mapController!=null)
 //        mapController.drawPlace();
-        mMapView.onResume();
+//        mMapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
+//        mMapView.onPause();
     }
 
     @Override

@@ -30,9 +30,37 @@ import android.support.v4.content.res.ResourcesCompat;
 import com.tu.place.R;
 import com.tu.place.model.Place;
 
+import java.util.Arrays;
+import java.util.List;
 
 
 public class CategoryHelper {
+
+  public static String getPlaceType(String[] _type, String name){
+    String type = "none";
+    for(int i=0; i<_type.length; i++) if(_type[i].contains("store")) _type[i] = "store";
+    List<String> listTypes = Arrays.asList(_type);
+    if((name.toLowerCase().contains("hotel")|| name.toLowerCase().contains("khách sạn")))
+      type = "Hotel";
+    else if(listTypes.contains("food"))
+      type = "Food";
+    else if(listTypes.contains("atm"))
+      type = "ATM";
+    else if(listTypes.contains("bank"))
+      type = "Bank";
+    else if(listTypes.contains("bus_station"))
+      type = "Bus stop";
+    else if(listTypes.contains("shopping_mall")||listTypes.contains("store"))
+      type = "Shop";
+    else if(listTypes.contains("cafe"))
+      type = "Drink";
+    else if(listTypes.contains("grocery_or_supermarket"))
+      type = "Super Market";
+    else if(listTypes.contains("health")||listTypes.contains("hospital")||listTypes.contains("dentist")||listTypes.contains("doctor"))
+      type = "Health";
+
+    return type;
+  }
 
   public static Integer getResourceIdForPlacePin(final Place p){
     final String category = (p.getContent());

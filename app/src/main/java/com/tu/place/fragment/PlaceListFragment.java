@@ -74,7 +74,7 @@ public class PlaceListFragment extends Fragment {
     }
 
     public void loadPlace(java.util.ArrayList<Place> list){
-        adapter = new AdapterPlace(list, new AdapterPlace.ItemListener() {
+        adapter = new AdapterPlace(getActivity(), list, new AdapterPlace.ItemListener() {
             @Override
             public void onItemClick(int position) {
 //                AppDialogManager.onShowPlaceDialog(getActivity(), ((MainActivity)getActivity()).filterListPlace.get(position));

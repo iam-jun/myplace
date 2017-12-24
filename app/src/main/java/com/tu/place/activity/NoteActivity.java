@@ -67,7 +67,7 @@ public class NoteActivity extends NavigationActivity implements AdapterView.OnIt
 
         this.tvTitle.setText(placeChoose.getTitle());
 //        this.tvDistance.setText(Float.toString(placeChoose.getDistance()) + " km");
-        this.tvScore.setText(Integer.toString(placeChoose.getScore()) + " điểm");
+        this.tvScore.setText(String.valueOf(placeChoose.getScore()) + " điểm");
         this.tvAddress.setText(placeChoose.getAddress());
         this.tvInfo.setText(placeChoose.getInfo());
     }

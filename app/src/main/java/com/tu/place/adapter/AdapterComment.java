@@ -5,66 +5,62 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.tu.place.R;
-import com.tu.place.model.Place;
-import com.tu.place.utils.AppContants;
+import com.tu.place.model.Comment;
 import com.tu.place.utils.AppUtils;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by SEV_USER on 4/25/2017.
  */
 
-public class AdapterPlace extends RecyclerView.Adapter<AdapterPlace.MyViewHolder> {
+public class AdapterComment extends RecyclerView.Adapter<AdapterComment.MyViewHolder> {
 
     private Context context;
-    private List<Place> arrPlace;
+    private List<Comment> arrComment;
     private ItemListener listener;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvTitle, tvContent, tvAdress, tvDistance;
-        public ImageView imPlace;
+        public TextView tvName, tvTime, tvComment;
+        public CircleImageView imgAvatar;
 
         public MyViewHolder(View view) {
             super(view);
 
-            imPlace = (ImageView) view.findViewById(R.id.imPlace);
-            tvTitle = (TextView) view.findViewById(R.id.tvTitle);
-            tvContent = (TextView) view.findViewById(R.id.tvContent);
-            tvAdress = (TextView) view.findViewById(R.id.tvAddress);
-            tvDistance = (TextView) view.findViewById(R.id.tvDistance);
+            imgAvatar = (CircleImageView) view.findViewById(R.id.imAvatar);
+            tvName = (TextView) view.findViewById(R.id.tv_name);
+            tvTime = (TextView) view.findViewById(R.id.tv_time);
+            tvComment = (TextView) view.findViewById(R.id.tv_comment);
         }
     }
 
 
-    public AdapterPlace(Context context, List<Place> arrPlace, ItemListener listener) {
-        this.arrPlace = arrPlace;
+    public AdapterComment(Context context, List<Comment> arrComment, ItemListener listener) {
+        this.arrComment = arrComment;
         this.listener = listener;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_place, parent, false);
+                .inflate(R.layout.item_comment, parent, false);
 
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        Place place = arrPlace.get(position);
-        holder.tvTitle.setText(place.getTitle());
-        holder.tvContent.setText(place.getContent());
-        holder.tvAdress.setText(place.getAddress());
-        holder.tvDistance.setText(String.valueOf(place.getDistance()/1000f)+" km");
-        if(!AppUtils.isEmptyString(place.getImg())) {
-            Picasso.with(context).load(AppContants.getURLImg(place.getImg())).placeholder(R.drawable.ic_map).into(holder.imPlace);
-        }
+        Comment comment = arrComment.get(position);
+        holder.tvName.setText(comment.getUserName());
+        holder.tvTime.setText(AppUtils.miliToDateString(comment.getTime()));
+        holder.tvComment.setText(comment.getContent());
+        Picasso.with(context).load(comment.getUrlAvatar()).placeholder(R.drawable.ic_map).into(holder.imgAvatar);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,7 +78,7 @@ public class AdapterPlace extends RecyclerView.Adapter<AdapterPlace.MyViewHolder
 
     @Override
     public int getItemCount() {
-        return arrPlace.size();
+        return arrComment.size();
     }
 
     public interface ItemListener{

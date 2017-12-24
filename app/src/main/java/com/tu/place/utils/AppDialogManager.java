@@ -6,6 +6,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -34,7 +36,7 @@ public class AppDialogManager {
     public static Dialog onShowPlaceDialog(Context context, Place place){
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(true);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
         dialog.setContentView(R.layout.ui_place);
@@ -85,5 +87,52 @@ public class AppDialogManager {
 
         dialog.show();
         return dialog;
+    }
+
+    public static Dialog onShowAddCommentDialog(Context context, final DialogClickListener listener){
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        dialog.setContentView(R.layout.ui_add_comment);
+
+        Button btnSubmit = (Button) dialog.findViewById(R.id.btnSubmit);
+        final Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
+//        RatingBar ratingBar = (RatingBar) dialog.findViewById(R.id.ratingBar);
+        final EditText edt = (EditText)dialog.findViewById(R.id.edtComment);
+//        Drawable progress = ratingBar.getProgressDrawable();
+//        DrawableCompat.setTint(progress, Color.parseColor("#d9c300"));
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!AppUtils.isEmptyString(edt.getText().toString())) {
+                    view.setTag(edt.getText().toString());
+                    listener.onAccept(view);
+                    dialog.dismiss();
+                }else {
+                    edt.setError("Chưa nhập comment");
+                }
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        return dialog;
+    }
+
+    public interface DialogClickListener{
+
+        void onAccept(View view);
+
+        void onCancel(View view);
+
     }
 }

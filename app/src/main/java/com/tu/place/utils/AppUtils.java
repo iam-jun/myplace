@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentTransaction;
 import com.tu.place.R;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Created by NhaKhoaPaRis on 12/7/2017.
@@ -44,43 +46,41 @@ public class AppUtils {
         return isAvailable;
     }
 
-    public static int getPlaceIcon(Context context, String content,  int score){
+    public static int getPlaceIcon(Context context, String content,  double score){
         String name = "";
-        if(score%2==0) score/=2;
-        else score = (score+1)/2;
+//        if(score%2==0) score/=2;
+//        else score = (score+1)/2;
+        int _score = (int) score;
         switch (content){
             case "Food":
-                name = "food_"+score;
+                name = "food_"+_score;
                 break;
             case "Hotel":
-                name = "hotel_"+score;
+                name = "hotel_"+_score;
                 break;
             case "Drink":
-                name = "coffee_"+score;
+                name = "coffee_"+_score;
                 break;
             case "Health":
-                name = "medical_"+score;
+                name = "medical_"+_score;
                 break;
             case "ATM":
-                name = "atm_"+score;
+                name = "atm_"+_score;
                 break;
             case "Bank":
-                name = "bank_"+score;
+                name = "bank_"+_score;
                 break;
             case "Shop":
-                name = "shop_"+score;
+                name = "shop_"+_score;
                 break;
             case "Super Market":
-                name = "market_"+score;
-                break;
-            case "Hospital":
-                name = "medical_"+score;
+                name = "market_"+_score;
                 break;
             case "BusStop":
-                name = "bus_stop_"+score;
+                name = "bus_stop_"+_score;
                 break;
             case "Entertaiment":
-                name = "gas_"+score;
+                name = "gas_"+_score;
                 break;
             default:
                 name = "empty_pin";
@@ -98,6 +98,17 @@ public class AppUtils {
         {
             return id;
         }
+    }
+
+    public static String getRandomIdCmt(String usn, String placeId){
+        return usn+placeId+ new SimpleDateFormat("ddMMyyyy").format(Calendar.getInstance().getTime());
+    }
+
+    public static String miliToDateString(long mili){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyy hh:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(mili);
+        return formatter.format(calendar.getTime());
     }
 
     public static byte[] bitmapToByteArray(Bitmap bitmap){

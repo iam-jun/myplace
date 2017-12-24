@@ -7,17 +7,19 @@ import java.io.Serializable;
  */
 
 public class Place implements Serializable{
-    private String address, content, img, info;
+    private String id, address, content, img, info;
     private double latitu;
     private double longitu;
     private String phone;
-    private int score;
+    private double score;
     private String title;
+    private String userId;
+    private float distance;
 
     public Place() {
     }
 
-    public Place(String address, String content, String img, String info, double latitu, double longitu, String phone, int score, String title) {
+    public Place(String address, String content, String img, String info, double latitu, double longitu, String phone, double score, String title) {
         this.address = address;
         this.content = content;
         this.img = img;
@@ -27,6 +29,14 @@ public class Place implements Serializable{
         this.phone = phone;
         this.score = score;
         this.title = title;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getAddress() {
@@ -85,11 +95,11 @@ public class Place implements Serializable{
         this.phone = phone;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(double score) {
         this.score = score;
     }
 
@@ -99,6 +109,14 @@ public class Place implements Serializable{
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
     }
 
     @Override
