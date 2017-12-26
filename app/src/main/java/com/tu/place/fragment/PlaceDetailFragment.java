@@ -3,6 +3,7 @@ package com.tu.place.fragment;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +39,10 @@ import com.tu.place.model.User;
 import com.tu.place.utils.AppContants;
 import com.tu.place.utils.AppDialogManager;
 import com.tu.place.utils.AppUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Calendar;
 
@@ -70,6 +76,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
     MainActivity mainActivity;
     ArrayList<Comment> listComment;
     AdapterComment mAdapter;
+    LinearLayout contentImg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,7 +122,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.getValue() != null) {
-                                Log.d(AppContants.TAG, dataSnapshot.toString());
+//                                Log.d(AppContants.TAG, dataSnapshot.toString());
                                 listComment.clear();
                                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                                     final Comment comment = child.getValue(Comment.class);
@@ -186,11 +193,16 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
                 comment.setUserId(MainActivity.user.username);
                 comment.setPlaceId(place.getId());
                 comment.setTime(Calendar.getInstance().getTimeInMillis());
+                java.util.ArrayList<String> arr = new ArrayList<>();
+                for(int i=0; i<contentImg.getChildCount(); i++)
+                    arr.add(contentImg.getChildAt(i).getTag().toString());
+                comment.setArrImg(arr);
+
                 if (AppUtils.isNetworkAvailable(mainActivity)) {
                     firebaseManager.writeRef(AppContants.FIREBASE_COMMENT_TABLE, AppUtils.getRandomIdCmt(MainActivity.user.username, place.getId()), comment, new FirebaseManager.Callback() {
                         @Override
                         public void success(DataSnapshot dataSnapshot) {
-
+                            contentImg = null;
                         }
 
                         @Override
@@ -198,14 +210,32 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
                             Snackbar.make(btnAddComment, "Đã có lỗi xảy ra, vui lòng thử lại", Snackbar.LENGTH_LONG).show();
                         }
                     });
-                } else Toast.makeText(mainActivity, "Vui lòng kiểm tra lại kết nối", Toast.LENGTH_LONG).show();
+                } else
+                    Toast.makeText(mainActivity, "Vui lòng kiểm tra lại kết nối", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onCancel(View view) {
-
+                contentImg = null;
+            }
+        }, new AppDialogManager.PickPhotoListener() {
+            @Override
+            public void onPickPhoto(LinearLayout parent, View view) {
+                if(contentImg==null)
+                contentImg = parent;
+                mainActivity.picImageFromGallery();
             }
         });
+    }
+
+    public void addPhoto(Uri uri){
+        ImageView img = new ImageView(getActivity());
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(500, 500);
+//        img.setLayoutParams(params);
+//        img.setImageURI(uri);
+        Picasso.with(getActivity()).load(uri).centerCrop().resize(300,300).into(img);
+        img.setTag(AppUtils.uriToBase64(uri, getActivity()));
+        contentImg.addView(img);
     }
 
     @Override
@@ -223,6 +253,23 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
 
                 break;
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(Uri uri) {
+        addPhoto(uri);
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override

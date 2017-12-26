@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -89,7 +90,7 @@ public class AppDialogManager {
         return dialog;
     }
 
-    public static Dialog onShowAddCommentDialog(Context context, final DialogClickListener listener){
+    public static Dialog onShowAddCommentDialog(Context context, final DialogClickListener listener, final  PickPhotoListener pickPhotoListener){
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
@@ -97,12 +98,21 @@ public class AppDialogManager {
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
         dialog.setContentView(R.layout.ui_add_comment);
 
+        final LinearLayout contentImg = (LinearLayout) dialog.findViewById(R.id.content_img);
+        ImageView imgPickPhoto = (ImageView) dialog.findViewById(R.id.img_pick_photo);
         Button btnSubmit = (Button) dialog.findViewById(R.id.btnSubmit);
         final Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
 //        RatingBar ratingBar = (RatingBar) dialog.findViewById(R.id.ratingBar);
         final EditText edt = (EditText)dialog.findViewById(R.id.edtComment);
 //        Drawable progress = ratingBar.getProgressDrawable();
 //        DrawableCompat.setTint(progress, Color.parseColor("#d9c300"));
+
+        imgPickPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickPhotoListener.onPickPhoto(contentImg, view);
+            }
+        });
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,5 +144,9 @@ public class AppDialogManager {
 
         void onCancel(View view);
 
+    }
+
+    public interface PickPhotoListener{
+        void onPickPhoto(LinearLayout parent, View view);
     }
 }

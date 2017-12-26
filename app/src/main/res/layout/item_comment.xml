@@ -23,8 +23,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginLeft="5dp">
+            android:layout_marginLeft="5dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_name"
@@ -49,5 +49,19 @@
                 android:maxLines="3"
                 android:text="Quán ăn ngon, phục vụ tốt. Tổng 2 người đi mất 200k nhưng  rất nhiều món. Giữ xe miễn phí, sẽ quay lại lần sau, " />
         </LinearLayout>
+
     </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/contentImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+
 </LinearLayout>

@@ -1,12 +1,17 @@
 package com.tu.place.utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Base64;
 
 import com.tu.place.R;
 
@@ -101,7 +106,7 @@ public class AppUtils {
     }
 
     public static String getRandomIdCmt(String usn, String placeId){
-        return usn+placeId+ new SimpleDateFormat("ddMMyyyy").format(Calendar.getInstance().getTime());
+        return usn+placeId+ new SimpleDateFormat("ddMMyyyyhhmmss").format(Calendar.getInstance().getTime());
     }
 
     public static String miliToDateString(long mili){
@@ -116,6 +121,29 @@ public class AppUtils {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         return stream.toByteArray();
+    }
+
+    public static String getRealPathFromURI(Uri contentURI, Context context) {
+        String result;
+        Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    public static String uriToBase64(Uri uri, Context context){
+        Bitmap bm = BitmapFactory.decodeFile(getRealPathFromURI(uri, context));
+        bm = Bitmap.createScaledBitmap(bm, bm.getWidth()*20/100, bm.getHeight()*20/100, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 30, baos); //bm is the bitmap object
+        byte[] byteArrayImage = baos.toByteArray();
+        return Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
     }
 
     public static void replaceFragmentWithAnimation(FragmentManager fm, Fragment fragment) {

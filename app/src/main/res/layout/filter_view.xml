@@ -34,11 +34,12 @@
 
         <SeekBar
             android:id="@+id/sbScore"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:theme="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:max="9"
+            android:max="5"
+            android:thumb="@drawable/blue_empty_pin"
             android:progress="0" />
 
     </LinearLayout>
@@ -46,7 +47,31 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="35dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:text="0" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:paddingRight="15dp"
+            android:text="5" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp">
 
         <ImageView
@@ -56,18 +81,44 @@
 
         <SeekBar
             android:id="@+id/sbRadius"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:theme="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:max="9"
+            android:thumb="@drawable/blue_empty_pin"
             android:progress="5" />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:paddingLeft="10dp"
+            android:text="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:paddingRight="15dp"
+            android:text="10" />
+    </LinearLayout>
+
+
     <ListView
         android:id="@+id/filterView"
-        android:layout_weight="0.3"
+        android:layout_weight="0.37"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -77,7 +128,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="right"
-        android:layout_weight="0.7"
+        android:layout_weight="0.63"
         android:orientation="horizontal">
 
         <Button

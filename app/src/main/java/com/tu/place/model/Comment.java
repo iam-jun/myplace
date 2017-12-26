@@ -9,12 +9,12 @@ import java.io.Serializable;
 public class Comment implements Serializable {
     String content, userId, userName, placeId, urlAvatar;
     long time;
-    String[] arrImg;
+    java.util.ArrayList<String> arrImg;
 
     public Comment() {
     }
 
-    public Comment(String content, String userId, String placeId, long time, String[] arrImg) {
+    public Comment(String content, String userId, String placeId, long time, java.util.ArrayList<String> arrImg) {
         this.content = content;
         this.userId = userId;
         this.placeId = placeId;
@@ -70,11 +70,11 @@ public class Comment implements Serializable {
         this.time = time;
     }
 
-    public String[] getArrImg() {
+    public java.util.ArrayList<String> getArrImg() {
         return arrImg;
     }
 
-    public void setArrImg(String[] arrImg) {
+    public void setArrImg(java.util.ArrayList<String> arrImg) {
         this.arrImg = arrImg;
     }
 }

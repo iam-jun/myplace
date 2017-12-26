@@ -1,7 +1,9 @@
 package com.tu.place.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -319,6 +321,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         AppUtils.replaceFragmentWithAnimation(getSupportFragmentManager(), new PlaceDetailFragment(place));
     }
+
+    public void picImageFromGallery(){
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
+    }
+    @SuppressLint("RestrictedApi")
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        switch(requestCode) {
+            case 1:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    int size = getSupportFragmentManager().getFragments().size();
+                    ((PlaceDetailFragment)getSupportFragmentManager().getFragments().get(size-1)).addPhoto(selectedImage);
+//                    EventBus.getDefault().postSticky(selectedImage);
+                }
+                break;
+        }
+    }
+
 
     public void hideFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
