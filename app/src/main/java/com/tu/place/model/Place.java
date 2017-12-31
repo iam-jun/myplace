@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 
 public class Place implements Serializable{
-    private String id, address, content, img, info;
+    private String id, address, content, img, titleInfo, info;
     private double latitu;
     private double longitu;
     private String phone;
@@ -61,6 +61,14 @@ public class Place implements Serializable{
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public String getTitleInfo() {
+        return titleInfo;
+    }
+
+    public void setTitleInfo(String titleInfo) {
+        this.titleInfo = titleInfo;
     }
 
     public String getInfo() {
@@ -117,6 +125,14 @@ public class Place implements Serializable{
 
     public void setDistance(float distance) {
         this.distance = distance;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override

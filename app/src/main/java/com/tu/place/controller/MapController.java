@@ -139,12 +139,12 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
                         Log.d(AppContants.TAG, "length: "+places.length());
                         for (int i=0; i<places.length(); i++){
                             Place place = new Place();
-                            place.setId(places.getJSONObject(i).getString("id"));
+                            place.setId(places.getJSONObject(i).getString("place_id"));
                             place.setTitle(places.getJSONObject(i).getString("name"));
                             if(places.getJSONObject(i).has("photos")) {
                                 String photo_ref = places.getJSONObject(i).getJSONArray("photos").getJSONObject(0).getString("photo_reference");
                                 if (!AppUtils.isEmptyString(photo_ref)) place.setImg(photo_ref);
-                                place.setInfo("Chưa có mô tả");
+//                                place.setInfo("Chưa có mô tả");
                             }
                             if(places.getJSONObject(i).has("rating"))
                                 place.setScore(places.getJSONObject(i).getDouble("rating"));

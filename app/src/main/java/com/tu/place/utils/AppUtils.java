@@ -15,9 +15,15 @@ import android.util.Base64;
 
 import com.tu.place.R;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by NhaKhoaPaRis on 12/7/2017.
@@ -144,6 +150,28 @@ public class AppUtils {
         bm.compress(Bitmap.CompressFormat.JPEG, 30, baos); //bm is the bitmap object
         byte[] byteArrayImage = baos.toByteArray();
         return Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+    }
+
+    public static byte[] compress(String string) throws IOException {
+        ByteArrayOutputStream baostream = new ByteArrayOutputStream();
+        OutputStream outStream = new GZIPOutputStream(baostream);
+        outStream.write(string.getBytes("UTF-8"));
+        outStream.close();
+        byte[] compressedBytes = baostream.toByteArray();
+        return compressedBytes;
+    }
+
+    public static String decompress(byte[] compressed) throws IOException {
+        InputStream inStream = new GZIPInputStream(
+                new ByteArrayInputStream(compressed));
+        ByteArrayOutputStream baoStream2 = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8192];
+        int len;
+        while ((len = inStream.read(buffer)) > 0) {
+            baoStream2.write(buffer, 0, len);
+        }
+        String uncompressedStr = baoStream2.toString("UTF-8");
+        return uncompressedStr.toString();
     }
 
     public static void replaceFragmentWithAnimation(FragmentManager fm, Fragment fragment) {

@@ -44,7 +44,8 @@
 
         <activity
             android:name=".activity.StartActivity"
-            android:theme="@style/AppTheme.NoActionbar">
+            android:theme="@style/AppTheme.NoActionbar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,26 +54,34 @@
         </activity>
         <activity android:name=".activity.LoginActivity"
             android:theme="@style/AppTheme.NoActionbar"
-            android:windowSoftInputMode="adjustPan|adjustResize"/>
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:screenOrientation="portrait"/>
         <activity android:name=".activity.FriendActivity"
             android:label="Friend list"/>
         <activity android:name=".activity.PlaceActivity"
             android:label="My Place"/>
         <activity android:name=".activity.RegisterActivity"
             android:label="Register"
-            android:windowSoftInputMode="adjustPan|adjustResize"/>
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.PlaceInfoActivity"
+            android:label="Place Information"
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:screenOrientation="portrait"/>
         <activity android:name=".activity.PlaceMgrActivity"
             android:label="Place Manager"/>
         <activity android:name=".activity.ChangeInfoActivity"
             android:label="Profile"
-            android:windowSoftInputMode="adjustPan|adjustResize"/>
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:screenOrientation="portrait"/>
         <activity android:name=".activity.NoteActivity"
             android:label="Note"/>
         <activity android:name=".activity.NoteDetailActivity"
             android:label="Note Detail"/>
         <activity android:name=".activity.MainActivity"
             android:label="Map"
-            android:windowSoftInputMode="adjustPan|adjustResize"/>
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:screenOrientation="portrait"/>
         <activity android:name=".activity.MapRouteActivity"
             android:label="MapRoute"/>
     </application>

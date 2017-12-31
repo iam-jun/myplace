@@ -52,68 +52,60 @@
                     android:textColor="@android:color/darker_gray"
                     android:textStyle="italic" />
 
-                <RatingBar
-                    android:id="@+id/rating"
-                    style="@style/Widget.AppCompat.RatingBar.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:numStars="5"
-                    android:rating="5"
-                    android:stepSize="0.1" />
-
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:orientation="horizontal">
+                    <RatingBar
+                        android:id="@+id/rating"
+                        style="@style/Widget.AppCompat.RatingBar.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:rating="5"
+                        android:stepSize="0.1" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txt_rating"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.4"
+                        android:text="4.5 trên 200 đánh giá"
+                        android:textColor="@color/colorText" />
+                </LinearLayout>
                 <TextView
-                    android:id="@+id/txt_rating"
+                    android:id="@+id/tvAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="7.8d trên 2176 lượt đánh giá"
+                    android:text="1232423423,21321321321321"
+                    android:singleLine="true"
                     android:textColor="@color/colorText" />
 
+                <TextView
+                    android:id="@+id/tvDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="1232423423,21321321321321"
+                    android:textColor="@color/colorText" />
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_mapmode" />
-
-            <TextView
-                android:id="@+id/tvAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="1232423423,21321321321321"
-                android:textColor="@color/colorPrimary" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_myplaces" />
-
-            <TextView
-                android:id="@+id/tvDistance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="1232423423,21321321321321"
-                android:textColor="@color/colorPrimary" />
-        </LinearLayout>
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:maxLines="3"
+            android:textColor="@color/color_text"
+            android:text="Chưa có mô tả"/>
 
         <LinearLayout
             android:layout_width="match_parent"

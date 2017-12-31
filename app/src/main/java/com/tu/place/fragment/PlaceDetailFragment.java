@@ -1,6 +1,7 @@
 package com.tu.place.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -30,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tu.place.R;
 import com.tu.place.activity.MainActivity;
+import com.tu.place.activity.PlaceInfoActivity;
 import com.tu.place.adapter.AdapterComment;
 import com.tu.place.firebase.FirebaseManager;
 import com.tu.place.model.ArrayList;
@@ -67,7 +69,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
 
     }
     ImageView imPlace;
-    TextView tvContent, tvAddess, tvTitle, tvDistance;
+    TextView tvContent, tvAddess, tvTitle, tvDistance, tvInfo;
     RatingBar ratingBar;
     ImageButton btnDirection;
     RecyclerView rvComment;
@@ -88,6 +90,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         tvAddess = (TextView) rootView.findViewById(R.id.tvAddress);
         tvTitle = (TextView) rootView.findViewById(R.id.tvTitle);
         tvDistance = (TextView) rootView.findViewById(R.id.tvDistance);
+        tvInfo = (TextView) rootView.findViewById(R.id.tv_info);
         ratingBar = (RatingBar) rootView.findViewById(R.id.rating);
         btnDirection = (ImageButton) rootView.findViewById(R.id.ibtnDirection);
         rvComment = (RecyclerView) rootView.findViewById(R.id.rvComment);
@@ -96,6 +99,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         mainActivity = (MainActivity) getActivity();
         btnDirection.setOnClickListener(this);
         btnAddComment.setOnClickListener(this);
+        tvInfo.setOnClickListener(this);
         Drawable progress = ratingBar.getProgressDrawable();
         DrawableCompat.setTint(progress, Color.YELLOW);
         firebaseManager = new FirebaseManager();
@@ -104,9 +108,31 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         listComment = new ArrayList<>();
         mAdapter = new AdapterComment(mainActivity, listComment, this);
         rvComment.setAdapter(mAdapter);
-        setData();
+        getPlaceDetail();
         listenCommentChange();
         return rootView;
+    }
+
+    private void getPlaceDetail(){
+        firebaseManager.getRef(AppContants.FIREBASE_PLACE_TABLE + "/" + place.getId(), new FirebaseManager.Callback() {
+            @Override
+            public void success(DataSnapshot dataSnapshot) {
+                if(dataSnapshot!=null){
+                    if(dataSnapshot.hasChild("userId"))
+                    place.setUserId(dataSnapshot.child("userId").getValue().toString());
+                    if(dataSnapshot.hasChild("info")){
+                        place.setTitleInfo(dataSnapshot.child("titleInfo").getValue().toString());
+                        place.setInfo(dataSnapshot.child("info").getValue().toString());
+                    }
+                }
+                setData();
+            }
+
+            @Override
+            public void failed() {
+
+            }
+        });
     }
 
     private void listenCommentChange(){
@@ -175,6 +201,22 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         ratingBar.setRating(Float.parseFloat(String.valueOf(place.getScore())));
         if(!AppUtils.isEmptyString(place.getImg())) {
             Picasso.with(getActivity()).load(AppContants.getURLImg(place.getImg())).placeholder(R.drawable.ic_map).into(imPlace);
+        }
+        if(AppUtils.isEmptyString(place.getInfo())){
+            if(!AppUtils.isEmptyString(place.getUserId())) {
+                if (place.getUserId().equals(MainActivity.user.username)) {
+                    tvInfo.setText("Viết giới thiệu địa điểm");
+                    tvInfo.setClickable(true);
+                    tvInfo.setFocusable(true);
+                }
+            }else{
+                tvInfo.setClickable(false);
+                tvInfo.setFocusable(false);
+            }
+        }else {
+            tvInfo.setText(place.getTitleInfo()+" ...xem thêm...");
+            tvInfo.setClickable(true);
+            tvInfo.setFocusable(true);
         }
     }
 
@@ -249,8 +291,10 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
                 getActivity().getFragmentManager().popBackStack();
                 ((MainActivity)getActivity()).showDirection(place);
                 break;
-            case R.id.rating:
-
+            case R.id.tv_info:
+                Intent i = new Intent(getActivity(), PlaceInfoActivity.class);
+                i.putExtra("placeId", place.getId());
+                startActivity(i);
                 break;
         }
     }

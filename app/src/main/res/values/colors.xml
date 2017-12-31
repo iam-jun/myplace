@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="background_act">#EEEEEE</color>
-    <color name="color_text">#3F51B5</color>
+    <color name="color_text">#303F9F</color>
     <color name="bg_button_normal">#3F51B5</color>
     <color name="bg_button_press">#303F9F</color>
     <drawable name="touchFeedback">#CFD8DC</drawable>

@@ -8,8 +8,11 @@ public class AppContants {
 
     public static String TAG = "MyProject";
     public static String FIREBASE_ROOT = "MyProject";
+    public static String ASSETS_PATH = "file:///android_asset/";
     public static String GG_PLACE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
     public static String GOOGLE_BROWSER_API_KEY = "AIzaSyDhLLXweHCuv8m4ZRqocAKizxRywaGBjXI";
+    public static String GG_PLACE_ID_KEY = "place_id_key";
+    public static String GG_PLACE_ID_FINDER_URL = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + GG_PLACE_ID_KEY + "&key="+GOOGLE_BROWSER_API_KEY;
     public static String GG_PLACE_STATUS = "status";
     public static String GG_PLACE_STATUS_OK = "OK";
     public static String GG_PLACE_PHOTO_REF_KEY = "photoreference_key";
@@ -26,5 +29,9 @@ public class AppContants {
 
     public static String getURLImg(String key){
         return GG_PLACE_PHOTO_REF_URL.replace(GG_PLACE_PHOTO_REF_KEY, key);
+    }
+
+    public static String getPlaceDetailURL(String key){
+        return GG_PLACE_ID_FINDER_URL.replace(GG_PLACE_ID_KEY, key);
     }
 }

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Summernote</title>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.css" rel="stylesheet">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+</head>
+<body>
+<input type="text" class="form-control" id="title" style="width: 98vw; margin: 1vw" placeholder="Tiêu đề" />
+<div id="summernote"></div>
+<button id="btn" class="btn btn-success" style="width: 98vw; margin: 1vw">Xác nhận</button>
+<script>
+    $(document).ready(function() {
+		var config = {
+			apiKey: "AIzaSyDsrDAW12N4TgFyn6VPPeKgvozta7jilXQ",
+			authDomain: "myplace-715d5.firebaseapp.com",
+			databaseURL: "https://myplace-715d5.firebaseio.com",
+			storageBucket: "myplace-715d5.appspot.com",
+		  };
+		  firebase.initializeApp(config);
+		  var storageRef  = firebase.storage().ref();
+        $('#summernote').summernote({
+		  height: 200,
+		  callbacks: {
+			onImageUpload: function(image) {
+				var file_name = image[0].name.split('.')[0]+new Date().getTime()+".jpg";
+				var ref = storageRef.child('PlaceInfo/'+file_name);
+				var reader = new FileReader();
+				reader.onloadend = function() {
+                    var img = new Image();
+					img.onload = function(){
+						img.setAttribute('style', 'width: 90vw');
+						compress(img, 50, 200, "jpg").then(function(img_b64){
+							console.log(img_b64);
+							var png = img_b64.split(',')[1];
+							var img2 = $('<img>').attr('src',  img_b64);
+							$('#summernote').summernote("insertNode", img2[0]);
+							//b64toBlob(png, "image/jpg").then(function(the_file){
+							//	ref.put(the_file).then(function(snapshot) {
+
+								//});
+							//});
+						});
+
+					};
+					img.src = reader.result;
+
+
+                }
+               reader.readAsDataURL(image[0]);
+			}
+		  }
+		});
+
+	function b64toBlob(b64Data, contentType, sliceSize) {
+	  contentType = contentType || '';
+	  sliceSize = sliceSize || 512;
+
+	  var byteCharacters = atob(b64Data);
+	  var byteArrays = [];
+	  var deferred = $.Deferred();
+
+	  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+		var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+		var byteNumbers = new Array(slice.length);
+		for (var i = 0; i < slice.length; i++) {
+		  byteNumbers[i] = slice.charCodeAt(i);
+		}
+
+		var byteArray = new Uint8Array(byteNumbers);
+
+		byteArrays.push(byteArray);
+	  }
+
+	  var blob = new Blob(byteArrays, {type: contentType});
+	  deferred.resolve(blob);
+	  return deferred.promise();
+	}
+
+	function compress(source_img_obj, quality, maxWidth, output_format){
+		var mime_type = "image/jpeg";
+		if(typeof output_format !== "undefined" && output_format=="png"){
+			mime_type = "image/png";
+		}
+		var deferred = $.Deferred();
+
+		maxWidth = maxWidth || 1000;
+		var natW = source_img_obj.naturalWidth;
+		var natH = source_img_obj.naturalHeight;
+		var ratio = natH / natW;
+		if (natW > maxWidth) {
+			natW = maxWidth;
+			natH = ratio * maxWidth;
+		}
+
+		var cvs = document.createElement('canvas');
+		cvs.width = natW;
+		cvs.height = natH;
+
+		var ctx = cvs.getContext("2d").drawImage(source_img_obj, 0, 0, natW, natH);
+		var newImageData = cvs.toDataURL(mime_type, quality/100);
+		deferred.resolve(newImageData);
+		return deferred.promise();
+	}
+
+	function getBase64Image(img) {
+		// Create an empty canvas element
+		var canvas = document.createElement("canvas");
+		canvas.width = img.width;
+		canvas.height = img.height;
+		var deferred = $.Deferred();
+
+		// Copy the image contents to the canvas
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(img, 0, 0);
+		var dataURL = canvas.toDataURL("image/jpg");
+		deferred.resolve(dataURL);
+
+		//return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+		return deferred.promise();
+	}
+
+
+    $("#btn").click(function(){
+		var title = $('#title').val();
+		var note = $('#summernote').summernote('code');
+		getNote(title, note);
+	});
+	function getNote(title, note){
+		window.JSInterface.getNote(title, note);
+	}
+
+
+});
+function setNote(title, note){
+		$('#title').val(title);
+		$('#summernote').summernote('code', note);
+	}
+  </script>
+</body>
+</html>
