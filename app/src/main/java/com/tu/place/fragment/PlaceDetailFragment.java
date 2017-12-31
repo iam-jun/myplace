@@ -300,6 +300,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
                 comment.setPlaceId(place.getId());
                 comment.setTime(Calendar.getInstance().getTimeInMillis());
                 java.util.ArrayList<String> arr = new ArrayList<>();
+                if(contentImg!=null)
                 for(int i=0; i<contentImg.getChildCount(); i++)
                     arr.add(contentImg.getChildAt(i).getTag().toString());
                 comment.setArrImg(arr);

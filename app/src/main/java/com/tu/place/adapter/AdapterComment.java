@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.tu.place.R;
 import com.tu.place.model.Comment;
+import com.tu.place.utils.AppDialogManager;
 import com.tu.place.utils.AppUtils;
 
 import java.util.List;
@@ -78,8 +79,14 @@ public class AdapterComment extends RecyclerView.Adapter<AdapterComment.MyViewHo
                 img.setCropToPadding(true);
                 img.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 byte[] decodedString = Base64.decode(comment.getArrImg().get(i), Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                final Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 img.setImageBitmap(decodedByte);
+                img.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        AppDialogManager.onShowImageViewerDialog(context, decodedByte);
+                    }
+                });
                 holder.contentImg.addView(img);
             }
         }

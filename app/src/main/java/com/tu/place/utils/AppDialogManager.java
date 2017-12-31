@@ -3,6 +3,7 @@ package com.tu.place.utils;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -82,6 +83,28 @@ public class AppDialogManager {
         imgClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        return dialog;
+    }
+
+    public static Dialog onShowImageViewerDialog(Context context, Bitmap bitmap){
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        dialog.setContentView(R.layout.ui_image_viewer);
+
+        ImageView img = (ImageView) dialog.findViewById(R.id.imageView);
+        final ImageView btnCancel = (ImageView) dialog.findViewById(R.id.imageView2);
+        img.setImageBitmap(bitmap);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 dialog.dismiss();
             }
         });
