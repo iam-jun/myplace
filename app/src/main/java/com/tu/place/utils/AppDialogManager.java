@@ -90,6 +90,38 @@ public class AppDialogManager {
         return dialog;
     }
 
+    public static Dialog onShowAddRatingDialog(Context context, float rating, final DialogClickListener listener){
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        dialog.setContentView(R.layout.ui_add_rating);
+
+        Button btnSubmit = (Button) dialog.findViewById(R.id.btnSubmit);
+        final Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
+        final RatingBar ratingBar = (RatingBar) dialog.findViewById(R.id.ratingBar);
+        ratingBar.setRating(rating);
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.setTag(ratingBar.getRating());
+                listener.onAccept(view);
+                dialog.dismiss();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        return dialog;
+    }
+
     public static Dialog onShowAddCommentDialog(Context context, final DialogClickListener listener, final  PickPhotoListener pickPhotoListener){
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

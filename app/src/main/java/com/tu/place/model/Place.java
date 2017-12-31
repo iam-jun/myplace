@@ -15,6 +15,7 @@ public class Place implements Serializable{
     private String title;
     private String userId;
     private float distance;
+    private int ratingCount;
 
     public Place() {
     }
@@ -109,6 +110,14 @@ public class Place implements Serializable{
 
     public void setScore(double score) {
         this.score = score;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
     public String getTitle() {

@@ -20,6 +20,7 @@ public class AppContants {
     public static String FIREBASE_USER_TABLE = FIREBASE_ROOT + "/" + "User";
     public static String FIREBASE_PLACE_TABLE = FIREBASE_ROOT + "/" + "Place";
     public static String FIREBASE_COMMENT_TABLE = FIREBASE_ROOT + "/" + "Comment";
+    public static String FIREBASE_RATING_TABLE = FIREBASE_ROOT + "/" + "Rating";
     public static String FIREBASE_PLACE_ID_COL = "placeId";
     public static String FIREBASE_LONGITU_COL = "longitu";
     public static String STORAGE_AVATAR = "Avatar";

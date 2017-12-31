@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public MapFragment mapFragment;
     public PlaceListFragment placeListFragment;
     public Location myLocation;
+    public Location currentLocation;
     public Float radius;
     public String placeKey;
     public int score;
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filterTypeList.clear();
         filterTypeList.addAll(selectedTypes);
         radius = 1000f;
-        score = 1;
+        score = 0;
         placeKey = "";
 
 

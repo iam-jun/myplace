@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Để lại bình luận"
+        android:text="Để lại đánh giá"
         android:textAlignment="center"
         android:textColor="@color/colorPrimary"
         android:textSize="18sp"
@@ -20,43 +20,12 @@
         android:textStyle="bold" />
 
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/content_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <ImageView
-            android:id="@+id/img_pick_photo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_vertical"
-            android:layout_weight="0.85"
-            android:background="@color/colorPrimary"
-            app:srcCompat="@android:drawable/ic_menu_camera" />
-
-        <EditText
-            android:id="@+id/edtComment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_weight="0.15"
-            android:ems="10"
-            android:hint="Nhập đánh giá..."
-            android:inputType="textMultiLine"
-            android:textStyle="italic" />
-    </LinearLayout>
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@style/RatingBar"
+        android:numStars="5" />
 
     <LinearLayout
         android:layout_width="match_parent"

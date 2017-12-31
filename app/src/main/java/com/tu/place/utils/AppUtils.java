@@ -62,6 +62,7 @@ public class AppUtils {
 //        if(score%2==0) score/=2;
 //        else score = (score+1)/2;
         int _score = (int) score;
+        if(_score==0) _score+=1;
         switch (content){
             case "Food":
                 name = "food_"+_score;

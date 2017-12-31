@@ -93,7 +93,7 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
         ((MainActivity)activity).filterTypeList.clear();
         ((MainActivity)activity).filterTypeList.addAll(selectedTypes);
         ((MainActivity)activity).placeKey = edtName.getText().toString();
-        ((MainActivity)activity).score = sbScore.getProgress()+1;
+        ((MainActivity)activity).score = sbScore.getProgress();
         ((MainActivity)activity).radius = (sbRadius.getProgress()+1) * 1000f;
         ((MainActivity)activity).mapFragment.mapController.loadPlace();
         if (activity instanceof FilterContract.FilterView){

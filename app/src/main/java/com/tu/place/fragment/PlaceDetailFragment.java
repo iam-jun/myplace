@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,6 +38,7 @@ import com.tu.place.firebase.FirebaseManager;
 import com.tu.place.model.ArrayList;
 import com.tu.place.model.Comment;
 import com.tu.place.model.Place;
+import com.tu.place.model.Rating;
 import com.tu.place.model.User;
 import com.tu.place.utils.AppContants;
 import com.tu.place.utils.AppDialogManager;
@@ -69,7 +71,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
 
     }
     ImageView imPlace;
-    TextView tvContent, tvAddess, tvTitle, tvDistance, tvInfo;
+    TextView tvContent, tvAddess, tvTitle, tvDistance, tvInfo, tvRating;
     RatingBar ratingBar;
     ImageButton btnDirection;
     RecyclerView rvComment;
@@ -79,7 +81,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
     ArrayList<Comment> listComment;
     AdapterComment mAdapter;
     LinearLayout contentImg;
-
+    private double myRating;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -91,6 +93,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         tvTitle = (TextView) rootView.findViewById(R.id.tvTitle);
         tvDistance = (TextView) rootView.findViewById(R.id.tvDistance);
         tvInfo = (TextView) rootView.findViewById(R.id.tv_info);
+        tvRating = (TextView) rootView.findViewById(R.id.tv_rating);
         ratingBar = (RatingBar) rootView.findViewById(R.id.rating);
         btnDirection = (ImageButton) rootView.findViewById(R.id.ibtnDirection);
         rvComment = (RecyclerView) rootView.findViewById(R.id.rvComment);
@@ -102,6 +105,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         tvInfo.setOnClickListener(this);
         Drawable progress = ratingBar.getProgressDrawable();
         DrawableCompat.setTint(progress, Color.YELLOW);
+        myRating = 0;
         firebaseManager = new FirebaseManager();
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         rvComment.setLayoutManager(mLayoutManager);
@@ -109,6 +113,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         mAdapter = new AdapterComment(mainActivity, listComment, this);
         rvComment.setAdapter(mAdapter);
         getPlaceDetail();
+        getRating();
         listenCommentChange();
         return rootView;
     }
@@ -135,10 +140,69 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
         });
     }
 
+    private void getRating(){
+        ratingBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    AppDialogManager.onShowAddRatingDialog(getActivity(), (float)myRating, new AppDialogManager.DialogClickListener() {
+                        @Override
+                        public void onAccept(View view) {
+                            Rating rating = new Rating();
+                            rating.setPlaceId(place.getId());
+                            rating.setUserId(MainActivity.user.username);
+                            rating.setRating((float)view.getTag());
+                            rating.setTime(Calendar.getInstance().getTimeInMillis());
+                            if (AppUtils.isNetworkAvailable(mainActivity)) {
+                                firebaseManager.writeRef(AppContants.FIREBASE_RATING_TABLE, MainActivity.user.username + place.getId(), rating, new FirebaseManager.Callback() {
+                                    @Override
+                                    public void success(DataSnapshot dataSnapshot) {
+                                    }
+
+                                    @Override
+                                    public void failed() {
+                                        Snackbar.make(btnAddComment, "Đã có lỗi xảy ra, vui lòng thử lại", Snackbar.LENGTH_LONG).show();
+                                    }
+                                });
+                            } else
+                                Toast.makeText(mainActivity, "Vui lòng kiểm tra lại kết nối", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onCancel(View view) {
+
+                        }
+                    });
+                }
+                return true;
+            }
+        });
+        if(place.getRatingCount()>0) tvRating.setText(place.getScore()+ " trên "+place.getRatingCount()+" đánh giá");
+        else tvRating.setText("Chưa có đánh giá");
+
+        if (AppUtils.isNetworkAvailable(mainActivity)) {
+            firebaseManager.getRef(AppContants.FIREBASE_RATING_TABLE + "/" + MainActivity.user.username + place.getId(), new FirebaseManager.Callback() {
+                @Override
+                public void success(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot!=null){
+                        if(dataSnapshot.hasChild("rating"))
+                            myRating = Double.parseDouble(dataSnapshot.child("rating").getValue().toString());
+                    }else myRating = 0;
+
+                }
+
+                @Override
+                public void failed() {
+
+                }
+            });
+        } else Snackbar.make(btnAddComment, "Vui lòng kiểm tra lại kết nối", Snackbar.LENGTH_LONG).show();
+    }
+
     private void listenCommentChange(){
 
         if (AppUtils.isNetworkAvailable(mainActivity)) {
-            mainActivity.listPlace.clear();
+//            mainActivity.listPlace.clear();
             Log.d(AppContants.TAG, place.getId());
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
             ref.child(AppContants.FIREBASE_COMMENT_TABLE)
@@ -296,6 +360,7 @@ public class PlaceDetailFragment extends Fragment implements View.OnClickListene
                 i.putExtra("placeId", place.getId());
                 startActivity(i);
                 break;
+
         }
     }
 

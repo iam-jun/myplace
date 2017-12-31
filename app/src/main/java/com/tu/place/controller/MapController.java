@@ -22,6 +22,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.tu.place.R;
 import com.tu.place.activity.MainActivity;
 import com.tu.place.activity.PlaceMgrActivity;
@@ -138,7 +143,7 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
                         JSONArray places = result.getJSONArray("results");
                         Log.d(AppContants.TAG, "length: "+places.length());
                         for (int i=0; i<places.length(); i++){
-                            Place place = new Place();
+                            final Place place = new Place();
                             place.setId(places.getJSONObject(i).getString("place_id"));
                             place.setTitle(places.getJSONObject(i).getString("name"));
                             if(places.getJSONObject(i).has("photos")) {
@@ -146,9 +151,10 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
                                 if (!AppUtils.isEmptyString(photo_ref)) place.setImg(photo_ref);
 //                                place.setInfo("Chưa có mô tả");
                             }
-                            if(places.getJSONObject(i).has("rating"))
-                                place.setScore(places.getJSONObject(i).getDouble("rating"));
-                            else place.setScore(4);
+//                            if(places.getJSONObject(i).has("rating"))
+//                                place.setScore(places.getJSONObject(i).getDouble("rating"));
+//                            else place.setScore(4);
+
                             place.setAddress(places.getJSONObject(i).getString("vicinity"));
                             String[] arr = new String[places.getJSONObject(i).getJSONArray("types").length()];
                             for(int j=0; j<arr.length; j++)
@@ -160,8 +166,38 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
                             location.setLatitude(place.getLatitu());
                             location.setLongitude(place.getLongitu());
                             place.setDistance(mainActivity.myLocation.distanceTo(location));
-                            if(!mainActivity.listPlace.contains(place))
-                            mainActivity.listPlace.add(place);
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                            ref.child(AppContants.FIREBASE_RATING_TABLE)
+                                    .orderByChild(AppContants.FIREBASE_PLACE_ID_COL)
+                                    .equalTo(place.getId())
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.getValue() != null) {
+//                                Log.d(AppContants.TAG, dataSnapshot.toString());
+                                                double sum = 0;
+                                                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                                    sum+=  Double.parseDouble(child.child("rating").getValue().toString());
+                                                }
+                                                double rating = sum/dataSnapshot.getChildrenCount();
+                                                place.setScore(rating);
+                                                place.setRatingCount((int)dataSnapshot.getChildrenCount());
+
+                                            }else{
+                                                place.setScore(0);
+                                                place.setRatingCount(0);
+
+                                            }
+                                            if(!mainActivity.listPlace.contains(place))
+                                                mainActivity.listPlace.add(place);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Log.e(AppContants.TAG, databaseError.toString());
+                                        }
+                                    });
+
                         }
                         mainActivity.filterPlace();
                     }else Snackbar.make(mainActivity.lnControl, "Đã có lỗi xảy ra", Snackbar.LENGTH_LONG).show();
@@ -203,6 +239,8 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mainActivity.myLocation.getLatitude(), mainActivity.myLocation.getLongitude()), 15.0f));
         }
+        if(mainActivity.currentLocation!=null)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mainActivity.currentLocation.getLatitude(), mainActivity.currentLocation.getLongitude()), 15.0f));
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMapLongClickListener(this);
@@ -331,6 +369,7 @@ public class MapController implements LocationListener, GoogleMap.OnMarkerClickL
         float distance = mainActivity.myLocation.distanceTo(location) / 1000;
 //        place.setDistance(distance);
         mainActivity.showFragment(place);
+        mainActivity.currentLocation = location;
         return true;
     }
 
